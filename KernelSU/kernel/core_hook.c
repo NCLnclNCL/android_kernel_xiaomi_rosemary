@@ -6,10 +6,7 @@
 #include <linux/kallsyms.h>
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
-#ifdef CONFIG_KSU_LSM_SECURITY_HOOKS
 #include <linux/lsm_hooks.h>
-#endif
-
 #include <linux/mm.h>
 #include <linux/nsproxy.h>
 #include <linux/path.h>
@@ -991,7 +988,7 @@ int ksu_handle_setuid(struct cred *new, const struct cred *old)
 		}
 	}
 	// - here we check if uid is a isolated service spawned by zygote directly
-	// - Apps that do not use "useAppZyogte" to start a isolated service will be directlyAdd commentMore actions
+	// - Apps that do not use "useAppZyogte" to start a isolated service will be directly
 	//   spawned by zygote which KSU will ignore it by default, the only fix for now is to
 	//   force a umount for those uid
 	// - Therefore make sure your root app doesn't use isolated service for root access
@@ -1002,6 +999,7 @@ int ksu_handle_setuid(struct cred *new, const struct cred *old)
 		goto out_susfs_try_umount_all;
 	}
 #endif
+
 
 	if (!is_appuid(new_uid) || is_unsupported_uid(new_uid.val)) {
 		// pr_info("handle setuid ignore non application or isolated uid: %d\n", new_uid.val);
@@ -1020,6 +1018,7 @@ int ksu_handle_setuid(struct cred *new, const struct cred *old)
 		goto out_susfs_try_umount_all;
 	}
 #endif
+
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 out_ksu_try_umount:
@@ -1053,6 +1052,7 @@ out_susfs_try_umount_all:
 	susfs_try_umount_all(new_uid.val);
 #else
 
+
 	// fixme: use `collect_mounts` and `iterate_mount` to iterate all mountpoint and
 	// filter the mountpoint whose target is `/data/adb`
 	ksu_try_umount("/system", true, 0);
@@ -1072,11 +1072,17 @@ out_susfs_try_umount_all:
 	return 0;
 }
 
+static int ksu_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+			  unsigned long arg4, unsigned long arg5)
+{
+	ksu_handle_prctl(option, arg2, arg3, arg4, arg5);
+	return -ENOSYS;
+}
 // kernel 4.4 and 4.9
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) ||	\
 	defined(CONFIG_IS_HW_HISI) ||	\
 	defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
-int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
+static int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
 			      unsigned perm)
 {
 	if (init_session_keyring != NULL) {
@@ -1091,31 +1097,6 @@ int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
 	return 0;
 }
 #endif
-#ifndef KSU_HAS_DEVPTS_HANDLER
-extern int ksu_handle_devpts(struct inode *inode);
-
-int ksu_inode_permission(struct inode *inode, int mask)
-{
-	if (unlikely(inode->i_sb && inode->i_sb->s_magic == DEVPTS_SUPER_MAGIC)) {
-#ifdef CONFIG_KSU_DEBUG
-		pr_info("%s: devpts inode accessed with mask: %x\n", __func__, mask);
-#endif
-		ksu_handle_devpts(inode);
-	}
-	return 0;
-}
-#endif
-
-
-
-#ifdef CONFIG_KSU_LSM_SECURITY_HOOKS
-
-static int ksu_task_prctl(int option, unsigned long arg2, unsigned long arg3,
-			  unsigned long arg4, unsigned long arg5)
-{
-	ksu_handle_prctl(option, arg2, arg3, arg4, arg5);
-	return -ENOSYS;
-}
 static int ksu_inode_rename(struct inode *old_inode, struct dentry *old_dentry,
 			    struct inode *new_inode, struct dentry *new_dentry)
 {
@@ -1129,7 +1110,19 @@ static int ksu_task_fix_setuid(struct cred *new, const struct cred *old,
 }
 
 #ifndef MODULE
-
+#ifndef KSU_HAS_DEVPTS_HANDLER
+extern int ksu_handle_devpts(struct inode *inode);
+static int ksu_inode_permission(struct inode *inode, int mask)
+{
+	if (unlikely(inode->i_sb && inode->i_sb->s_magic == DEVPTS_SUPER_MAGIC)) {
+#ifdef CONFIG_KSU_DEBUG
+		pr_info("%s: devpts inode accessed with mask: %x\n", __func__, mask);
+#endif
+		ksu_handle_devpts(inode);
+	}
+	return 0;
+}
+#endif
 
 static struct security_hook_list ksu_hooks[] = {
 	LSM_HOOK_INIT(task_prctl, ksu_task_prctl),
@@ -1352,12 +1345,3 @@ void __init ksu_core_init(void)
 void ksu_core_exit(void)
 {
 }
-#else
-void __init ksu_core_init(void)
-{
-	pr_info("ksu_core_init: LSM hooks not in use.\n");
-}
-void ksu_core_exit(void)
-{
-}
-#endif //CONFIG_KSU_LSM_SECURITY_HOOKS
