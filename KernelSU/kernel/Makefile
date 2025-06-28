@@ -55,9 +55,9 @@ endif
 ifeq ($(shell grep "ssize_t kernel_write" $(srctree)/fs/read_write.c | grep -q "const void" ; echo $$?),0)
 ccflags-y += -DKSU_OPTIONAL_KERNEL_WRITE
 endif
-ifeq ($(shell grep -q "int\s\+path_umount" $(srctree)/fs/namespace.c; echo $$?),0)
-ccflags-y += -DKSU_HAS_PATH_UMOUNT
-endif
+#ifeq ($(shell grep -q "int\s\+path_umount" $(srctree)/fs/namespace.c; echo $$?),0)
+#ccflags-y += -DKSU_HAS_PATH_UMOUNT
+#endif
 
 # we have pts_unix98/devpts_get_priv hook compat !!
 KSU_HAS_DEVPTS_INODE := $(shell grep -q "ksu_handle_devpts" $(srctree)/fs/devpts/inode.c; echo $$?)
