@@ -1920,7 +1920,7 @@ static inline bool may_mandlock(void)
 	return false;
 }
 #endif
-static int can_umount(const struct path *path, int flags)Add commentMore actions
+static int can_umount(const struct path *path, int flags)
 {
 	struct mount *mnt = real_mount(path->mnt);
 
