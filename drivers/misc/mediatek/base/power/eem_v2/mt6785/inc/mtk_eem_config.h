@@ -383,13 +383,13 @@ enum mt_cpu_dvfs_id {
 
 /* different for L_L */
 #define VMAX_VAL_LL                     (0x37)
-#define VMIN_VAL_LL                     (0x15)
-#define VCO_VAL_LL                      (0x15)
+#define VMIN_VAL_LL                     (0x12)
+#define VCO_VAL_LL                      (0x12)
 
 /* different for B_L */
 #define VMAX_VAL_BL                     (0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_BL                     (0x20)
-#define VCO_VAL_BL                      (0x20)
+#define VMIN_VAL_BL                     (0x1C)
+#define VCO_VAL_BL                      (0x1C)
 #define DVTFIXED_VAL_BL					(0x6)
 
 /* different for L_H */
