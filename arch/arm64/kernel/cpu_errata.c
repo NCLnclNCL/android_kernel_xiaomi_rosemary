@@ -517,8 +517,8 @@ static const struct midr_range arm64_ssb_cpus[] = {
 	CAP_MIDR_RANGE_LIST(midr_list)
 
 /* Track overall mitigation state. We are only mitigated if all cores are ok */
-static bool __hardenbp_enab = true;
-static bool __spectrev2_safe = true;
+static bool __hardenbp_enab = false;
+static bool __spectrev2_safe = false;
 
 /*
  * List of CPUs that do not need any Spectre-v2 mitigation at all.
@@ -564,7 +564,7 @@ check_branch_predictor(const struct arm64_cpu_capabilities *entry, int scope)
 	}
 
 	/* forced off */
-	if (__nospectre_v2 || cpu_mitigations_off()) {
+	if (cpu_mitigations_off()) {
 		pr_info_once("spectrev2 mitigation disabled by command line option\n");
 		__hardenbp_enab = false;
 		return false;
