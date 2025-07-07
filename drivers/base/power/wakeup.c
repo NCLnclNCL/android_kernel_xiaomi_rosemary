@@ -671,11 +671,12 @@ static void wakeup_source_report_event(struct wakeup_source *ws, bool hard)
 
 		if (!ws->active)
 			wakeup_source_activate(ws);
+		if (hard)
+		        pm_system_wakeup();
 #ifdef CONFIG_BOEFFLA_WL_BLOCKER
 	}
 #endif
-	if (hard)
-		pm_system_wakeup();
+	
 }
 
 /**
