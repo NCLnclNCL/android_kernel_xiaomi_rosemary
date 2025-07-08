@@ -572,7 +572,7 @@ int pmic_auxadc_chip_init(struct device *dev)
 	pmic_set_register_value(PMIC_AUXADC_AVG_NUM_CH7_WAKEUP, 0x6);
 
 	/* update VBIF28 by AUXADC */
-	chan_vbif = iio_channel_get(dev, "AUXADC_VBIF");
+	chan_vbif = iio_channel_get(dev, "pmic_bif_voltage");
 	if (IS_ERR(chan_vbif)) {
 		pr_notice("[%s] iio channel consumer error(AUXADC_VBIF)\n",
 			__func__);
