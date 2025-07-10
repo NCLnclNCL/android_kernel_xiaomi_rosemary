@@ -46,7 +46,6 @@ endif
 
     # Do build-in for Makefile checking
     # export CONFIG_WLAN_DRV_BUILD_IN=y
-ifeq ($(CONFIG_WLAN_DRV_BUILD_INN),y)
     # for gen4m options
     export CONFIG_MTK_COMBO_WIFI_HIF=axi
     export WLAN_CHIP_ID=6785
@@ -70,7 +69,6 @@ ifeq ($(CONFIG_MTK_FMRADIO),y)
     export CFG_FM_CHIP_ID=6785
     export CFG_FM_CHIP=mt6631
     obj-y += fmradio/
-endif
 endif
 # Otherwise we were called directly from the command line;
 # invoke the kernel build system.
