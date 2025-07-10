@@ -39,11 +39,8 @@ endif
     obj-y += $(MODULE_NAME).o
     $(MODULE_NAME)-objs += common/connectivity_build_in_adapter.o
     $(MODULE_NAME)-objs += common/wmt_build_in_adapter.o
-    $(MODULE_NAME)-objs += power_throttling/adapter.o
-    $(MODULE_NAME)-objs += power_throttling/core.o
-    $(MODULE_NAME)-objs += power_throttling/test.o
 
-
+#ifeq ($(CONFIG_WLAN_DRV_BUILD_IN),y)
     # Do build-in for Makefile checking
     # export CONFIG_WLAN_DRV_BUILD_IN=y
 
@@ -71,7 +68,7 @@ ifeq ($(CONFIG_MTK_FMRADIO),y)
     export CFG_FM_CHIP=mt6631
     obj-y += fmradio/
 endif
-
+#endif
 # Otherwise we were called directly from the command line;
 # invoke the kernel build system.
 else
