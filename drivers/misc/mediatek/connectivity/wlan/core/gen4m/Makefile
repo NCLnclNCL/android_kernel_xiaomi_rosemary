@@ -12,7 +12,6 @@ ifeq ($(os),)
 os=linux
 endif
 
-ccflags-y += -Wno-unused-variable
 ccflags-y += -Wno-unused-value
 ccflags-y += -Wno-unused-result
 ccflags-y += -Wno-format
@@ -188,7 +187,6 @@ CONFIG_MTK_WIFI_POWER_THROTTLING=y
 CONFIG_MTK_WIFI_PKT_OFLD_SUPPORT=y
 CONFIG_MTK_WIFI_APF_SUPPORT=y
 ccflags-y += -DCFG_SUPPORT_BW160
-
 ifneq ($(TARGET_BUILD_VARIANT),user)
 CONFIG_MTK_WIFI_NAN=y
 endif
@@ -365,14 +363,12 @@ ifeq ($(CONFIG_MTK_AEE_FEATURE), y)
 else
     ccflags-y += -DCFG_SUPPORT_AEE=0
 endif
-
 # Disable ASSERT() for user load, enable for others
 ifneq ($(TARGET_BUILD_VARIANT),user)
     ccflags-y += -DBUILD_QA_DBG=1
 else
     ccflags-y += -DBUILD_QA_DBG=0
 endif
-
 ifeq ($(CONFIG_MTK_COMBO_WIFI),y)
     ccflags-y += -DCFG_WPS_DISCONNECT=1
 endif
