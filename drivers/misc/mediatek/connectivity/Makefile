@@ -39,9 +39,6 @@ endif
     obj-y += $(MODULE_NAME).o
     $(MODULE_NAME)-objs += common/connectivity_build_in_adapter.o
     $(MODULE_NAME)-objs += common/wmt_build_in_adapter.o
-    $(MODULE_NAME)-objs += power_throttling/adapter.o
-    $(MODULE_NAME)-objs += power_throttling/core.o
-    $(MODULE_NAME)-objs += power_throttling/test.o
 
 ifeq ($(CONFIG_WLAN_DRV_BUILD_IN),y)
     # Do build-in for Makefile checking
