@@ -9716,6 +9716,7 @@ void kalUpdateCompHdlrRec(IN struct ADAPTER *prAdapter,
 	prAdapter->u4CompRecIdx = (prAdapter->u4CompRecIdx + 1)
 					% OID_HDLR_REC_NUM;
 }
+
 void kalPrintUTC(char *msg_buf, int msg_buf_size)
 {
 	int ret = 0;
@@ -9798,6 +9799,7 @@ void kalPrintLog(const char *fmt, ...)
 
 	va_end(args);
 }
+
 
 #if (CFG_SUPPORT_POWER_THROTTLING == 1)
 void kalPwrLevelHdlrRegister(IN struct ADAPTER *prAdapter,

@@ -1952,7 +1952,6 @@ void kalUpdateCompHdlrRec(IN struct ADAPTER *prAdapter,
 	IN PFN_OID_HANDLER_FUNC pfnOidHandler, IN struct CMD_INFO *prCmdInfo);
 
 extern uint32_t get_wifi_standalone_log_mode(void);
-
 void kalPrintLog(const char *fmt, ...);
 
 #if (CFG_SUPPORT_POWER_THROTTLING == 1)
