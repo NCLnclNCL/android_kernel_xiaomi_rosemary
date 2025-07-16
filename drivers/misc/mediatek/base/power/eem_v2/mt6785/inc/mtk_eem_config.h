@@ -334,8 +334,8 @@ enum mt_cpu_dvfs_id {
 #define VBOOT_PMIC_CLR	(0)
 #define VBOOT_VAL		(0x40) /* volt domain: 0.8v */
 #define VMAX_VAL		(0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL		(0x1C) /* volt domain: 0.6v*/
-#define VCO_VAL			(0x1C)
+#define VMIN_VAL		(0x1A) /* volt domain: 0.6v*/
+#define VCO_VAL			(0x1a)
 #define DVTFIXED_VAL	(0x6)
 #define DVTFIXED_VAL_V2	(10)
 
@@ -343,8 +343,8 @@ enum mt_cpu_dvfs_id {
 
 
 #define VMAX_VAL_B		(0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_B		(0x1C) /* volt domain: 0.6v*/
-#define VCO_VAL_B		(0x1C) /* volt domain: 0.6v*/
+#define VMIN_VAL_B		(0x1A) /* volt domain: 0.6v*/
+#define VCO_VAL_B		(0x1A) /* volt domain: 0.6v*/
 #define DVTFIXED_VAL_B	(0x6)
 #define DVTFIXED_VAL_B_V2	(10)
 
@@ -358,50 +358,50 @@ enum mt_cpu_dvfs_id {
 
 /* different for CCI */
 #define VMAX_VAL_CCI		(0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_CCI		(0x1C)
-#define VCO_VAL_CCI			(0x1C)
+#define VMIN_VAL_CCI		(0x1A)
+#define VCO_VAL_CCI		(0x1A)
 #define DVTFIXED_VAL_CCI	(0x6)
 #define DVTFIXED_VAL_CCI_V2	(10)
 
 
 /* different for GPU */
 #define VMAX_VAL_GPU                    (0x73) /* eem domain: 1.11875v*/
-#define VMIN_VAL_GPU                    (0x20) /* eem domain: 0.6125v*/
-#define VCO_VAL_GPU                     (0x1B) /* eem domain: 0.575v*/
+#define VMIN_VAL_GPU                    (0x1C) /* eem domain: 0.6125v*/
+#define VCO_VAL_GPU                     (0x1A) /* eem domain: 0.575v*/
 
 /* different for GPU_L */
 #define VMAX_VAL_GL                     (0x73)
-#define VMIN_VAL_GL                     (0x20)
-#define VCO_VAL_GL                      (0x1B)
+#define VMIN_VAL_GL                     (0x1C)
+#define VCO_VAL_GL                      (0x1A)
 #define DVTFIXED_VAL_GL					(0x04)
 #define DVTFIXED_VAL_GPU				(0x04)
 
 /* different for GPU_H */
 #define VMAX_VAL_GH                     (0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_GH                     (0x20)
-#define VCO_VAL_GH                      (0x1B)
+#define VMIN_VAL_GH                     (0x1C)
+#define VCO_VAL_GH                      (0x1A)
 
 /* different for L_L */
 #define VMAX_VAL_LL                     (0x37)
-#define VMIN_VAL_LL                     (0x12)
-#define VCO_VAL_LL                      (0x12)
+#define VMIN_VAL_LL                     (0x10)
+#define VCO_VAL_LL                      (0x10)
 
 /* different for B_L */
 #define VMAX_VAL_BL                     (0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_BL                     (0x1C)
-#define VCO_VAL_BL                      (0x1C)
+#define VMIN_VAL_BL                     (0x1A)
+#define VCO_VAL_BL                      (0x1A)
 #define DVTFIXED_VAL_BL					(0x6)
 
 /* different for L_H */
 #define VMAX_VAL_H			(0x50)
-#define VMIN_VAL_H			(0x2C)
-#define VCO_VAL_H			(0x2C)
+#define VMIN_VAL_H			(0x2A)
+#define VCO_VAL_H			(0x2A)
 #define DVTFIXED_VAL_H			(0x03)
 
 /* different for B_H */
 #define VMAX_VAL_BH			(0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_BH			(0x1C)
-#define VCO_VAL_BH			(0x1C)
+#define VMIN_VAL_BH			(0x1A)
+#define VCO_VAL_BH			(0x1A)
 #define DVTFIXED_VAL_BH		(0x6)
 
 /* different for APU */
