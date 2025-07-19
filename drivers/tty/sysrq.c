@@ -204,7 +204,7 @@ static struct sysrq_key_op sysrq_showlocks_op = {
 	.action_msg	= "Show Locks Held",
 };
 #else
-#define sysrq_showlocks_op (*(struct sysrq_key_op *)NULL)
+#define sysrq_showlocks_op NULL
 #endif
 
 #ifdef CONFIG_SMP
