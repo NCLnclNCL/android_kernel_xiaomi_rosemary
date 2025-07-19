@@ -495,8 +495,12 @@ static struct sysrq_key_op *sysrq_key_table[36] = {
 	/* x: May be registered on sparc64 for global PMU dump */
 	NULL,				/* x */
 	/* y: May be registered on sparc64 for global register dump */
-	NULL,				/* y */
-	&sysrq_ftrace_dump_op,		/* z */
+	NULL,/* y */
+#ifdef CONFIG_TRACING
+	&sysrq_ftrace_dump_op,	/* z */
+#else
+	NULL,				/* j */
+#endif
 };
 
 /* key2index calculation, -1 on invalid index */
