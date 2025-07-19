@@ -446,7 +446,12 @@ static struct sysrq_key_op *sysrq_key_table[36] = {
 	NULL,				/* a */
 	&sysrq_reboot_op,		/* b */
 	&sysrq_crash_op,		/* c */
+#ifdef CONFIG_LOCKDEP
+
 	&sysrq_showlocks_op,		/* d */
+#else
+        NULL,
+#endif
 	&sysrq_term_op,			/* e */
 	&sysrq_moom_op,			/* f */
 	/* g: May be registered for the kernel debugger */
