@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 
-ccflags-y := -I$(src) -Wall -Werror
+#ccflags-y := -I$(src) -Wall -Werror
 IO_MODULE := mtk
 
 # EXTRA_CFLAGS += -DDEBUG
