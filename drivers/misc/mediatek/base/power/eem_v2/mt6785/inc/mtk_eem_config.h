@@ -366,19 +366,19 @@ enum mt_cpu_dvfs_id {
 
 /* different for GPU */
 #define VMAX_VAL_GPU                    (0x73) /* eem domain: 1.11875v*/
-#define VMIN_VAL_GPU                    (0x1C) /* eem domain: 0.6125v*/
+#define VMIN_VAL_GPU                    (0x1E) /* eem domain: 0.6125v*/
 #define VCO_VAL_GPU                     (0x1A) /* eem domain: 0.575v*/
 
 /* different for GPU_L */
 #define VMAX_VAL_GL                     (0x73)
-#define VMIN_VAL_GL                     (0x1C)
+#define VMIN_VAL_GL                     (0x1E)
 #define VCO_VAL_GL                      (0x1A)
 #define DVTFIXED_VAL_GL					(0x04)
 #define DVTFIXED_VAL_GPU				(0x04)
 
 /* different for GPU_H */
 #define VMAX_VAL_GH                     (0x73) /* volt domain: 1.11875v*/
-#define VMIN_VAL_GH                     (0x1C)
+#define VMIN_VAL_GH                     (0x1E)
 #define VCO_VAL_GH                      (0x1A)
 
 /* different for L_L */
