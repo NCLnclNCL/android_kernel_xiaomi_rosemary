@@ -226,9 +226,7 @@ extern int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 		     unsigned long arg4, unsigned long arg5);
 extern int ksu_handle_rename(struct dentry *old_dentry, struct dentry *new_dentry);
 extern int ksu_handle_setuid(struct cred *new, const struct cred *old);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) ||	\
-	defined(CONFIG_IS_HW_HISI) ||	\
-	defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+#ifdef CONFIG_KSU_ALLOWLIST_WORKAROUND
 extern int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
 			      unsigned perm);
 #endif
@@ -1705,9 +1703,7 @@ int security_key_permission(key_ref_t key_ref,
 			    const struct cred *cred, unsigned perm)
 {
 #ifdef CONFIG_KSU
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) ||	\
-	defined(CONFIG_IS_HW_HISI) ||	\
-	defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+#ifdef CONFIG_KSU_ALLOWLIST_WORKAROUND
 	ksu_key_permission(key_ref, cred, perm);
 #endif
 #endif
