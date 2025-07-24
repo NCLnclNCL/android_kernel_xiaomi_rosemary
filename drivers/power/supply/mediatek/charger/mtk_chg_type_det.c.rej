@@ -1,0 +1,38 @@
+--- drivers/power/supply/mediatek/charger/mtk_chg_type_det.c
++++ drivers/power/supply/mediatek/charger/mtk_chg_type_det.c
+@@ -390,6 +390,7 @@ static int mt_charger_set_property(struct power_supply *psy,
+ 	}
+ 
+ 	queue_work(cti->chg_in_wq, &cti->chg_in_work);
++
+ 	#ifdef CONFIG_EXTCON_USB_CHG
+ 	if (!IS_ERR(info->edev))
+ 		queue_delayed_work(system_power_efficient_wq,
+@@ -1150,27 +1129,6 @@ static int chgdet_task_threadfn(void *data)
+ #else
+ 		mtk_pmic_enable_chr_type_det(attach);
+ #endif
+-		goto pm_relax;
+-bypass_chgdet:
+-		val.intval = attach;
+-		ret = power_supply_set_property(psy, POWER_SUPPLY_PROP_ONLINE,
+-						&val);
+-		if (ret < 0)
+-			pr_notice("%s: power supply set online fail(%d)\n",
+-				  __func__, ret);
+-		if (tcpm_inquire_typec_attach_state(cti->tcpc) ==
+-						   TYPEC_ATTACHED_AUDIO)
+-			val.intval = attach ? NONSTANDARD_CHARGER :
+-					      CHARGER_UNKNOWN;
+-		else
+-			val.intval = attach ? STANDARD_HOST : CHARGER_UNKNOWN;
+-		ret = power_supply_set_property(psy,
+-						POWER_SUPPLY_PROP_CHARGE_TYPE,
+-						&val);
+-		if (ret < 0)
+-			pr_notice("%s: power supply set charge type fail(%d)\n",
+-				  __func__, ret);
+-pm_relax:
+ 		pm_relax(cti->dev);
+ 	}
+ 	pr_info("%s: --\n", __func__);
