@@ -264,12 +264,6 @@ struct binder_node_info_for_ref {
 	__u32            reserved3;
 };
 
-struct binder_frozen_status_info {
-	__u32            pid;
-	__u32            sync_recv;
-	__u32            async_recv;
-};
-
 struct binder_freeze_info {
 	__u32            pid;
 	__u32            enable;
