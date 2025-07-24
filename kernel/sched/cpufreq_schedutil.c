@@ -475,12 +475,14 @@ static void sugov_update_shared(struct update_util_data *hook, u64 time,
 	sg_cpu->last_update = time;
 
 	if (sugov_should_update_freq(sg_policy, time)) {
-		if (flags & SCHED_CPUFREQ_DL)
+		if (flags & SCHED_CPUFREQ_DL) {
 			next_f = sg_policy->policy->cpuinfo.max_freq;
 			sg_policy->cached_raw_freq = sg_policy->prev_cached_raw_freq;
-		else
+			}
+			
+		else {
 			next_f = sugov_next_freq_shared(sg_cpu, time);
-
+}
 
 		sugov_update_commit(sg_policy, time, next_f);
 	}
