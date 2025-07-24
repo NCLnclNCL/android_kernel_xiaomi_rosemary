@@ -1,10 +1,17 @@
 --- drivers/android/binder.c
 +++ drivers/android/binder.c
-@@ -6310,6 +6395,7 @@ static void binder_deferred_release(struct binder_proc *proc)
- 	atomic_inc(&proc->tmp_ref);
+@@ -3543,8 +3546,13 @@ static int binder_proc_transaction(struct binder_transaction *t,
+ 	}
  
- 	proc->is_dead = true;
-+	proc->is_frozen = false;
- 	threads = 0;
- 	active_transactions = 0;
- 	while ((n = rb_first(&proc->threads))) {
+ 	binder_inner_proc_lock(proc);
++	if (proc->is_frozen) {
++		proc->sync_recv |= !oneway;
++		proc->async_recv |= oneway;
++	}
+ 
+-	if (proc->is_frozen || proc->is_dead || (thread && thread->is_dead)) {
++	if ((proc->is_frozen && !oneway) || proc->is_dead ||
++			(thread && thread->is_dead)) {
+ 		bool proc_is_dead = proc->is_dead
+ 			|| (thread && thread->is_dead);
+ 		binder_inner_proc_unlock(proc);
