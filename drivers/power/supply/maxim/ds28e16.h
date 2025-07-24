@@ -67,13 +67,13 @@
 
 //retry times config
 #define SET_SRAM_RETRY					4
-#define GET_USER_MEMORY_RETRY				8
-#define GET_PERSONALITY_RETRY				8
-#define GET_ROM_ID_RETRY				8
-#define GET_BLOCK_STATUS_RETRY				8
-#define SET_BLOCK_STATUS_RETRY				8
-#define GET_MAC_RETRY					8
-#define GET_VERIFY_RETRY				8
+#define GET_USER_MEMORY_RETRY				2
+#define GET_PERSONALITY_RETRY				2
+#define GET_ROM_ID_RETRY				2
+#define GET_BLOCK_STATUS_RETRY				2
+#define SET_BLOCK_STATUS_RETRY				2
+#define GET_MAC_RETRY					2
+#define GET_VERIFY_RETRY				2
 #define GET_S_SECRET_RETRY				4
 
 // xiaomi's battery identity
