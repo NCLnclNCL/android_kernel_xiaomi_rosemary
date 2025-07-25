@@ -1,0 +1,11 @@
+--- drivers/misc/mediatek/eccci/port/ccci_swtp.c
++++ drivers/misc/mediatek/eccci/port/ccci_swtp.c
+@@ -333,7 +333,7 @@ int swtp_init(int md_id)
+ 	spin_lock_init(&swtp_data[md_id].spinlock);
+ 
+ 	/* schedule init work */
+-	schedule_delayed_work(&swtp_data[md_id].init_delayed_work, HZ);
++	queue_delayed_work(system_power_efficient_wq, &swtp_data[md_id].init_delayed_work, HZ);
+ 
+ 	CCCI_BOOTUP_LOG(md_id, SYS, "%s end, init_delayed_work scheduled\n",
+ 		__func__);

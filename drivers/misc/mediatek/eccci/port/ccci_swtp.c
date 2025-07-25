@@ -144,7 +144,7 @@ static void swtp_send_tx_power_state(struct swtp_t *swtp)
 			CCCI_LEGACY_ERR_LOG(swtp->md_id, SYS,
 				"%s send tx power failed, ret=%d, schedule delayed work\n",
 				__func__, ret);
-			schedule_delayed_work(&swtp->delayed_work, 5 * HZ);
+			queue_delayed_work(system_power_efficient_wq, &swtp->delayed_work, 5 * HZ);
 		}
 	} else
 		CCCI_LEGACY_ERR_LOG(swtp->md_id, SYS,
