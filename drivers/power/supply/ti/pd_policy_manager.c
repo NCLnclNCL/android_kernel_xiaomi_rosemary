@@ -188,6 +188,7 @@ static bool get_mic_chg_exist_flag(void)
 	return mic_chg_exist;
 }
 
+static bool ln8000_is_valid = false;
 
 EXPORT_SYMBOL(set_chg_exist_flag);
 EXPORT_SYMBOL(get_chg_exist_flag);
@@ -553,7 +554,26 @@ static void usbpd_check_cp_psy(struct usbpd_pm *pdpm)
 			pr_err("cp_psy not found\n");
 	}
 }
+static void usbpd_check_ln8000_chg(struct usbpd_pm *pdpm)
+{
+	int rc;
+	union power_supply_propval val;
 
+	rc = power_supply_get_property(pdpm->cp_psy,
+				POWER_SUPPLY_PROP_MODEL_NAME, &val);
+	if (rc < 0) {
+		pr_err("Failed getting charger IC name, rc=%d\n", rc);
+		ln8000_is_valid = false;
+	}
+
+	if (strcmp(val.strval, "ln8000") == 0) {
+		pr_info("Detected ln8000 IC charger\n");
+		ln8000_is_valid = true;
+	} else {
+		pr_info("Detected other IC charger\n");
+		ln8000_is_valid = false;
+	}
+}
 static void usbpd_check_cp_sec_psy(struct usbpd_pm *pdpm)
 {
 	if (!pdpm->cp_sec_psy) {
@@ -1657,7 +1677,7 @@ static void usbpd_pm_workfunc(struct work_struct *work)
 			internal = PM_WORK_RUN_QUICK_INTERVAL;
 		else
 			internal = PM_WORK_RUN_QUICK_INTERVAL;
-		schedule_delayed_work(&pdpm->pm_work,
+		queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work,
 				msecs_to_jiffies(internal));
 	}
 #else
@@ -1681,7 +1701,7 @@ static void usbpd_pm_workfunc(struct work_struct *work)
 			#endif
 			/* 2021.02.20 longcheer jiangshitian change for mic noise end */
 		}
-		schedule_delayed_work(&pdpm->pm_work,
+		queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work,
 				msecs_to_jiffies(internal));
 	}
 #endif
@@ -1743,7 +1763,7 @@ static void usbpd_pd_contact(struct usbpd_pm *pdpm, bool connected)
 			pr_err("Failed to read pd type!\n");
 
 		if (val.intval == POWER_SUPPLY_PD_APDO)
-			schedule_delayed_work(&pdpm->pm_work, 0);
+			queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work, 0);
 
 		pr_debug("%s pd is connected.\n", __func__);
 	} else {
@@ -1769,7 +1789,7 @@ static void usbpd_pps_non_verified_contact(struct usbpd_pm *pdpm, bool connected
 			pr_err("Failed to read pd type!\n");
 
 		if (val.intval == POWER_SUPPLY_PD_APDO)
-			schedule_delayed_work(&pdpm->pm_work, 5*HZ);
+			queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work, 5*HZ);
 
 		pr_debug("%s pd is connected.\n", __func__);
 	} else {
@@ -1796,7 +1816,7 @@ static void cp_psy_change_work(struct work_struct *work)
 		pdpm->cp.vbus_pres = val.intval;
 
 	if (!ac_pres && pdpm->cp.vbus_pres)
-		schedule_delayed_work(&pdpm->pm_work, 0);
+		queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work, 0);
 #endif
 	pdpm->psy_change_running = false;
 }
@@ -1997,6 +2017,7 @@ static int usbpd_pm_probe(struct platform_device *pdev)
 	spin_lock_init(&pdpm->psy_change_lock);
 
 	usbpd_check_cp_psy(pdpm);
+	usbpd_check_ln8000_chg(pdpm);
 	usbpd_check_cp_sec_psy(pdpm);
 	usbpd_check_usb_psy(pdpm);
 
