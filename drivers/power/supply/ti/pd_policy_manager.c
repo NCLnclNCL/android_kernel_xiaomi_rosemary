@@ -188,7 +188,6 @@ static bool get_mic_chg_exist_flag(void)
 	return mic_chg_exist;
 }
 
-static bool ln8000_is_valid = false;
 
 EXPORT_SYMBOL(set_chg_exist_flag);
 EXPORT_SYMBOL(get_chg_exist_flag);
@@ -552,26 +551,6 @@ static void usbpd_check_cp_psy(struct usbpd_pm *pdpm)
 		}
 		if (!pdpm->cp_psy)
 			pr_err("cp_psy not found\n");
-	}
-}
-static void usbpd_check_ln8000_chg(struct usbpd_pm *pdpm)
-{
-	int rc;
-	union power_supply_propval val;
-
-	rc = power_supply_get_property(pdpm->cp_psy,
-				POWER_SUPPLY_PROP_MODEL_NAME, &val);
-	if (rc < 0) {
-		pr_err("Failed getting charger IC name, rc=%d\n", rc);
-		ln8000_is_valid = false;
-	}
-
-	if (strcmp(val.strval, "ln8000") == 0) {
-		pr_info("Detected ln8000 IC charger\n");
-		ln8000_is_valid = true;
-	} else {
-		pr_info("Detected other IC charger\n");
-		ln8000_is_valid = false;
 	}
 }
 static void usbpd_check_cp_sec_psy(struct usbpd_pm *pdpm)
@@ -2017,7 +1996,6 @@ static int usbpd_pm_probe(struct platform_device *pdev)
 	spin_lock_init(&pdpm->psy_change_lock);
 
 	usbpd_check_cp_psy(pdpm);
-	usbpd_check_ln8000_chg(pdpm);
 	usbpd_check_cp_sec_psy(pdpm);
 	usbpd_check_usb_psy(pdpm);
 
