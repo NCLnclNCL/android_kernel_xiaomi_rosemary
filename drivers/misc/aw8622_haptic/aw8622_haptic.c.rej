@@ -1,0 +1,11 @@
+--- drivers/misc/aw8622_haptic/aw8622_haptic.c
++++ drivers/misc/aw8622_haptic/aw8622_haptic.c
+@@ -530,7 +530,7 @@ static int aw8622_play_wave(struct aw8622_haptic *haptic)
+ 		dev_err(haptic->dev, "%s pwm_set_spec_config failed ret = %d\n", __func__, ret);
+ 	}
+ 	if (!haptic->is_power_on) {
+-		gpio_set_value(haptic->hwen_gpio, 1); //hw enable
++		gpio_set_value(haptic->hwen_gpio, 1); //hw enable
+ 		haptic->is_power_on = true;
+ 	}
+ 	pr_info("%s effect idx = %d, play_time secs = %d, ms= %lu wave nums = %d\n", __func__,
