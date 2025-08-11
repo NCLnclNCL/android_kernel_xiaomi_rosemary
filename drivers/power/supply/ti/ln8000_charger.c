@@ -515,7 +515,7 @@ static void ln8000_print_regmap(struct ln8000_info *info)
         }
         sprintf(temp_buf + strlen(temp_buf), "0x%02X[0x%02X],", LN8000_REG_INT1_MSK + i, regs[i]);
         if (((i+1) % 10 == 0) || ((i+1) == print_reg_num)) {
-            ln_info("%s\n", temp_buf);
+            ln_dbg("%s\n", temp_buf);
             memset(temp_buf, 0x0, sizeof(temp_buf));
         }
     }
