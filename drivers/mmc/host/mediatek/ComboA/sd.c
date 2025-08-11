@@ -4035,7 +4035,7 @@ static int msdc_do_cmdq_request_with_retry(struct msdc_host *host,
 	if (data)
 		stop = data->stop;
 
-	retry = 5;
+	retry = 3;
 	while (msdc_do_request_cq(mmc, mrq)) {
 		msdc_dump_trans_error(host, cmd, data, stop, mrq->sbc);
 		if ((cmd->error == (unsigned int)-EILSEQ) ||
