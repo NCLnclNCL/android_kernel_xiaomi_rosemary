@@ -2151,7 +2151,7 @@ static void __exit ds28e16_exit(void)
 	platform_driver_unregister(&ds28e16_driver);
 }
 
-subsys_initcall(ds28e16_init);
+module_init(ds28e16_init);
 module_exit(ds28e16_exit);
 
 MODULE_AUTHOR("xiaomi Inc.");
