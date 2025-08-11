@@ -1229,7 +1229,7 @@ static irqreturn_t ln8000_interrupt_handler(int irq, void *data)
 
     ln_info("int_reg=0x%x, int_msk=0x%x, masked_int=0x%x\n", int_reg, int_msk, masked_int);
 
-    ln8000_print_regmap(info);
+  //  ln8000_print_regmap(info);
     LN8000_BIT_CHECK(masked_int, 7, "(INT) FAULT_INT");
     LN8000_BIT_CHECK(masked_int, 6, "(INT) NTC_PROT_INT");
     LN8000_BIT_CHECK(masked_int, 5, "(INT) CHARGE_PHASE_INT");
