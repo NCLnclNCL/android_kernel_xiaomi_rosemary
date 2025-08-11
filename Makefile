@@ -713,7 +713,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-fuction)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS   += -Os
 else
-KBUILD_CFLAGS   += -O2
+KBUILD_CFLAGS   += -O3
 endif
 ifeq ($(cc-name),gcc)
 KBUILD_CFLAGS	+= -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
@@ -1003,7 +1003,7 @@ KBUILD_CFLAGS	+= $(call cc-option,-fmerge-constants)
 KBUILD_CFLAGS  += $(call cc-option,-fno-stack-check,)
 
 # conserve stack if available
-KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
+#KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
 
 # disallow errors like 'EXPORT_GPL(foo);' with missing header
 #KBUILD_CFLAGS   += $(call cc-option,-Werror=implicit-int)
