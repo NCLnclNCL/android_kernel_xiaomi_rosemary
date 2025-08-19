@@ -538,11 +538,11 @@ static void kwdt_process_kick(int local_bit, int cpu,
 	 *  avoid bulk of delayed printk happens here
 	 */
 	wk_tsk_kick_time[cpu] = sched_clock();
-	ret = snprintf(msg_buf, WK_MAX_MSG_SIZE,
-	 "[wdk-c] cpu=%d,lbit=0x%x,cbit=0x%x,%d,%d,%lld,%lld,%lld,[%lld,%ld]\n",
-	 cpu, local_bit, wk_check_kick_bit(), lasthpg_cpu, lasthpg_act,
-	 lasthpg_t, lastsuspend_t, lastresume_t, wk_tsk_kick_time[cpu],
-	 curInterval);
+	//ret = snprintf(msg_buf, WK_MAX_MSG_SIZE,
+	// "[wdk-c] cpu=%d,lbit=0x%x,cbit=0x%x,%d,%d,%lld,%lld,%lld,[%lld,%ld]\n",
+	// cpu, local_bit, wk_check_kick_bit(), lasthpg_cpu, lasthpg_act,
+	// lasthpg_t, lastsuspend_t, lastresume_t, wk_tsk_kick_time[cpu],
+	// curInterval);
 
 	if (local_bit == wk_check_kick_bit()) {
 		msg_buf[5] = 'k';
@@ -574,8 +574,8 @@ static void kwdt_process_kick(int local_bit, int cpu,
 	 * [wdt-k]: kick watchdog actaully, this log is more important thus
 	 *	    using printk_deferred to ensure being printed.
 	 */
-	if (ret >= 0)
-		pr_info("%s", msg_buf);
+	//if (ret >= 0)
+	//	pr_info("%s", msg_buf);
 
 	if (dump_timeout)
 		dump_wdk_bind_info();
