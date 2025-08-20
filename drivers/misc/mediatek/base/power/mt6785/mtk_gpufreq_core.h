@@ -328,9 +328,18 @@ enum g_limited_idx_enum {
 	IDX_BATT_PERCENT_LIMITED,
 	IDX_BATT_OC_LIMITED,
 	IDX_PBM_LIMITED,
+#ifdef CONFIG_CONTROL_GPU
+	IDX_SCENE_LIMITED,
+#endif
 	NUMBER_OF_LIMITED_IDX,
 };
-
+#ifdef CONFIG_CONTROL_GPU
+//cuixiaogang@Swdp.shanghai, 2017/12/08, Add GPU min/max limit for scene requirement.
+enum {
+	IDX_SCENE_MIN_LIMITED,
+	NR_IDX_POWER_MIN_LIMITED,
+};
+#endif
 /**************************************************
  * Structures
  **************************************************/

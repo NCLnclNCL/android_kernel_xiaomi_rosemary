@@ -6,7 +6,11 @@ config MTK_CPU_FREQ
 	  When enable this option, CPU frequency and voltage will be
 	  changed which will depended on CPU FREQ governor.
 	  If unsure, say N.
-
+config CONTROL_GPU
+	bool CONTROL GPU
+	default n
+	---help---
+	   Control gpu clock
 config MTK_PTPOD
 	bool "MTK PTPOD"
 	default n

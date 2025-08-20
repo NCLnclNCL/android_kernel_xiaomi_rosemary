@@ -1,0 +1,27 @@
+--- /home/ncl/Downloads/android_kernel_xiaomi_rosemary/drivers/misc/mediatek/base/power/mt6785/mtk_gpufreq_core.h	2025-06-28 13:18:53.296872077 +0700
++++ /home/ncl/Downloads/realmeC11_realmeC12_realmeC15_AndroidQ-kernel-source/drivers/misc/mediatek/base/power/mt6785/mtk_gpufreq_core.h	2025-08-19 21:21:50.212597517 +0700
+@@ -249,6 +249,9 @@
+ 	IDX_BATT_PERCENT_LIMITED,
+ 	IDX_BATT_OC_LIMITED,
+ 	IDX_PBM_LIMITED,
++#ifdef CONFIG_CONTROL_GPU
++	IDX_SCENE_LIMITED,
++#endif
+ 	NUMBER_OF_LIMITED_IDX,
+ };
+ enum g_volt_switch_enum {
+@@ -256,6 +259,14 @@
+ 	VOLT_RISING,
+ };
+ 
++#ifdef CONFIG_CONTROL_GPU
++//cuixiaogang@Swdp.shanghai, 2017/12/08, Add GPU min/max limit for scene requirement.
++enum {
++	IDX_SCENE_MIN_LIMITED,
++	NR_IDX_POWER_MIN_LIMITED,
++};
++#endif
++
+ /**************************************************
+  * Structures
+  **************************************************/
