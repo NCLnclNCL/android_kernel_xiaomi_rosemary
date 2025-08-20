@@ -296,15 +296,15 @@ int mt_gpufreq_scene_protect(unsigned int min_freq, unsigned int max_freq)
 	}
 
 	mutex_lock(&mt_gpufreq_lock);
-	for (i = 0; i < g_opp_idx_num; i++) {
+	for (i = 0; i < g_max_opp_idx_num; i++) {
 		//max freq
 		if (g_opp_table[i].gpufreq_khz <= max_freq && !max_done) {
 			g_limited_idx_array[IDX_SCENE_LIMITED] = i;
 			max_done = true;
 		}
 		//min freq
-		if (g_opp_table[g_opp_idx_num - 1 - i].gpufreq_khz >= min_freq && !min_done) {
-			g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_opp_idx_num - 1 - i;
+		if (g_opp_table[g_max_opp_idx_num - 1 - i].gpufreq_khz >= min_freq && !min_done) {
+			g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_max_opp_idx_num - 1 - i;
 			min_done = true;
 		}
 	}
@@ -312,7 +312,7 @@ int mt_gpufreq_scene_protect(unsigned int min_freq, unsigned int max_freq)
 	if (!max_done)
 		g_limited_idx_array[IDX_SCENE_LIMITED] = 0;
 	if (!min_done)
-		g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_opp_idx_num - 1;
+		g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_max_opp_idx_num - 1;
 
 	// if min freq > max freq
 	if (g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] <
@@ -389,7 +389,7 @@ static int mt_gpufreq_in_time_proc_show(struct seq_file *m, void *v)
 	int i;
 
 	//gpufreq from high to low
-	for (i = 0; i < g_opp_idx_num; i++) {
+	for (i = 0; i < g_max_opp_idx_num; i++) {
 		seq_printf(m, "%llu ", mt_gpufreq_time_in_state[i] / 1000);
 	}
 	seq_printf(m, "\n");
@@ -401,7 +401,7 @@ static int mt_gpufreq_opp_list_proc_show(struct seq_file *m, void *v)
 {
 	int i;
 
-	for (i = 0; i < g_opp_idx_num; i++) {
+	for (i = 0; i < g_max_opp_idx_num; i++) {
 		seq_printf(m, "%d ", g_opp_table[i].gpufreq_khz);
 	}
 	seq_printf(m, "\n");
@@ -447,9 +447,9 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 	}
 #ifdef CONFIG_CONTROL_GPU
 	//min freq
-	gpufreq_pr_debug("@%s: OPP freq is limited by Thermal/Power/PBM, g_min_limited_idx = %d g_opp_idx_num = %d\n",
-					__func__, target_cond_idx, g_opp_idx_num);
-	if (g_min_limited_idx != g_opp_idx_num - 1) {
+	gpufreq_pr_debug("@%s: OPP freq is limited by Thermal/Power/PBM, g_min_limited_idx = %d g_max_opp_idx_num = %d\n",
+					__func__, target_cond_idx, g_max_opp_idx_num);
+	if (g_min_limited_idx != g_max_opp_idx_num - 1) {
 		if (target_freq < g_opp_table[g_min_limited_idx].gpufreq_khz) {
 			target_freq = g_opp_table[g_min_limited_idx].gpufreq_khz;
 			target_volt = g_opp_table[g_min_limited_idx].gpufreq_volt;
@@ -569,7 +569,7 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 #ifdef CONFIG_CONTROL_GPU
 	now = local_clock();
 	if (likely(time_in_state_run == 1)) {
-		if (now > prev_switch_time && target_idx < min((unsigned int)32, g_opp_idx_num)) {
+		if (now > prev_switch_time && target_idx < min((unsigned int)32, g_max_opp_idx_num)) {
 			mt_gpufreq_time_in_state[target_idx] += now - prev_switch_time;
 			prev_switch_time = now;
 		}
@@ -3099,7 +3099,7 @@ static void __mt_gpufreq_update_max_limited_idx(void)
 static void __mt_gpufreq_update_min_limited_idx(void)
 {
 	int i = 0;
-	unsigned limited_idx = g_opp_idx_num - 1;
+	unsigned limited_idx = g_max_opp_idx_num - 1;
 
 	for (i = 0; i < NR_IDX_POWER_MIN_LIMITED; i++) {
 		if (g_limited_min_idx_array[i] < limited_idx)
@@ -3302,7 +3302,7 @@ static void __mt_gpufreq_setup_opp_table(
 	g_max_opp_idx_num = num;
 	g_max_limited_idx = g_segment_max_opp_idx;
 #ifdef CONFIG_CONTROL_GPU
-	g_min_limited_idx = g_opp_idx_num - 1;
+	g_min_limited_idx = g_max_opp_idx_num - 1;
 #endif /* CONFIG_CONTROL_GPU */
 	g_DVFS_off_by_ptpod_idx = g_segment_max_opp_idx;
 
