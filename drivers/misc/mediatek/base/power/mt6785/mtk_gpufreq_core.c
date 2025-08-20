@@ -79,6 +79,9 @@ static unsigned int __mt_gpufreq_get_cur_freq(void);
 static unsigned int __mt_gpufreq_get_cur_vsram_gpu(void);
 static int __mt_gpufreq_get_opp_idx_by_vgpu(unsigned int vgpu);
 static unsigned int __mt_gpufreq_get_vsram_gpu_by_vgpu(unsigned int vgpu);
+static void __mt_gpufreq_update_intepolating_volt(
+		unsigned int idx, unsigned int high,
+		unsigned int low, int factor);
 static unsigned int __mt_gpufreq_get_limited_freq_by_power(
 		unsigned int limited_power);
 static enum g_posdiv_power_enum __mt_gpufreq_get_posdiv_power(
@@ -134,10 +137,10 @@ static struct g_clk_info *g_clk;
 static unsigned int g_ptpod_opp_idx_num;
 static unsigned int *g_ptpod_opp_idx_table;
 static unsigned int g_ptpod_opp_idx_table_segment[] = {
-	0, 3, 6, 8,
-	10, 12, 14, 16,
-	18, 20, 22, 24,
-	26, 28, 29, 30
+	 0, 12, 15, 18,
+	20, 22, 24, 26,
+	28, 30, 32, 34,
+	36, 38, 40, 42
 };
 
 static struct g_opp_table_info g_opp_table_segment[] = {
@@ -150,28 +153,40 @@ static struct g_opp_table_info g_opp_table_segment[] = {
 	GPUOP(SEG_GPU_DVFS_FREQ6,  SEG_GPU_DVFS_VOLT6,  SEG_GPU_DVFS_VSRAM6),
 	GPUOP(SEG_GPU_DVFS_FREQ7,  SEG_GPU_DVFS_VOLT7,  SEG_GPU_DVFS_VSRAM7),
 	GPUOP(SEG_GPU_DVFS_FREQ8,  SEG_GPU_DVFS_VOLT8,  SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ9,  SEG_GPU_DVFS_VOLT9,  SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ10, SEG_GPU_DVFS_VOLT10, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ11, SEG_GPU_DVFS_VOLT11, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ12, SEG_GPU_DVFS_VOLT12, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ13, SEG_GPU_DVFS_VOLT13, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ14, SEG_GPU_DVFS_VOLT14, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ15, SEG_GPU_DVFS_VOLT15, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ16, SEG_GPU_DVFS_VOLT16, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ17, SEG_GPU_DVFS_VOLT17, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ18, SEG_GPU_DVFS_VOLT18, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ19, SEG_GPU_DVFS_VOLT19, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ20, SEG_GPU_DVFS_VOLT20, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ21, SEG_GPU_DVFS_VOLT21, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ22, SEG_GPU_DVFS_VOLT22, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ23, SEG_GPU_DVFS_VOLT23, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ24, SEG_GPU_DVFS_VOLT24, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ25, SEG_GPU_DVFS_VOLT25, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ26, SEG_GPU_DVFS_VOLT26, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ27, SEG_GPU_DVFS_VOLT27, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ28, SEG_GPU_DVFS_VOLT28, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ29, SEG_GPU_DVFS_VOLT29, SEG_GPU_DVFS_VSRAM8),
-	GPUOP(SEG_GPU_DVFS_FREQ30, SEG_GPU_DVFS_VOLT30, SEG_GPU_DVFS_VSRAM8),
+	GPUOP(SEG_GPU_DVFS_FREQ9,  SEG_GPU_DVFS_VOLT9,  SEG_GPU_DVFS_VSRAM9),
+	GPUOP(SEG_GPU_DVFS_FREQ10, SEG_GPU_DVFS_VOLT10, SEG_GPU_DVFS_VSRAM10),
+	GPUOP(SEG_GPU_DVFS_FREQ11, SEG_GPU_DVFS_VOLT11, SEG_GPU_DVFS_VSRAM11),
+	GPUOP(SEG_GPU_DVFS_FREQ12, SEG_GPU_DVFS_VOLT12, SEG_GPU_DVFS_VSRAM12),
+	GPUOP(SEG_GPU_DVFS_FREQ13, SEG_GPU_DVFS_VOLT13, SEG_GPU_DVFS_VSRAM13),
+	GPUOP(SEG_GPU_DVFS_FREQ14, SEG_GPU_DVFS_VOLT14, SEG_GPU_DVFS_VSRAM14),
+	GPUOP(SEG_GPU_DVFS_FREQ15, SEG_GPU_DVFS_VOLT15, SEG_GPU_DVFS_VSRAM15),
+	GPUOP(SEG_GPU_DVFS_FREQ16, SEG_GPU_DVFS_VOLT16, SEG_GPU_DVFS_VSRAM16),
+	GPUOP(SEG_GPU_DVFS_FREQ17, SEG_GPU_DVFS_VOLT17, SEG_GPU_DVFS_VSRAM17),
+	GPUOP(SEG_GPU_DVFS_FREQ18, SEG_GPU_DVFS_VOLT18, SEG_GPU_DVFS_VSRAM18),
+	GPUOP(SEG_GPU_DVFS_FREQ19, SEG_GPU_DVFS_VOLT19, SEG_GPU_DVFS_VSRAM19),
+	GPUOP(SEG_GPU_DVFS_FREQ20, SEG_GPU_DVFS_VOLT20, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ21, SEG_GPU_DVFS_VOLT21, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ22, SEG_GPU_DVFS_VOLT22, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ23, SEG_GPU_DVFS_VOLT23, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ24, SEG_GPU_DVFS_VOLT24, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ25, SEG_GPU_DVFS_VOLT25, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ26, SEG_GPU_DVFS_VOLT26, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ27, SEG_GPU_DVFS_VOLT27, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ28, SEG_GPU_DVFS_VOLT28, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ29, SEG_GPU_DVFS_VOLT29, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ30, SEG_GPU_DVFS_VOLT30, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ31, SEG_GPU_DVFS_VOLT31, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ32, SEG_GPU_DVFS_VOLT32, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ33, SEG_GPU_DVFS_VOLT33, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ34, SEG_GPU_DVFS_VOLT34, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ35, SEG_GPU_DVFS_VOLT35, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ36, SEG_GPU_DVFS_VOLT36, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ37, SEG_GPU_DVFS_VOLT37, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ38, SEG_GPU_DVFS_VOLT38, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ39, SEG_GPU_DVFS_VOLT39, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ40, SEG_GPU_DVFS_VOLT40, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ41, SEG_GPU_DVFS_VOLT41, SEG_GPU_DVFS_VSRAM20),
+	GPUOP(SEG_GPU_DVFS_FREQ42, SEG_GPU_DVFS_VOLT42, SEG_GPU_DVFS_VSRAM20),
 };
 
 static const struct of_device_id g_gpufreq_of_match[] = {
@@ -248,45 +263,62 @@ static enum g_posdiv_power_enum g_posdiv_power;
 static DEFINE_MUTEX(mt_gpufreq_lock);
 static DEFINE_MUTEX(mt_gpufreq_power_lock);
 static unsigned int g_limited_idx_array[NUMBER_OF_LIMITED_IDX] = { 0 };
-static bool g_limited_ignore_array[NUMBER_OF_LIMITED_IDX] = { false };
 #ifdef CONFIG_CONTROL_GPU
 static unsigned int g_limited_min_idx_array[NR_IDX_POWER_MIN_LIMITED] = { INT_MAX };
 #endif
+static bool g_limited_ignore_array[NUMBER_OF_LIMITED_IDX] = { false };
 static void __iomem *g_apmixed_base;
 
+#include "ged_log.h"
+#include "ged_base.h"
+
+#if MT_GPUFREQ_GED_READY == 1
+/* the debugging logs are at /d/ged/logbufs/gfreq */
+extern GED_LOG_BUF_HANDLE gpufreq_ged_log;
+#endif
+
+/**
+ * ===============================================
+ * SECTION : API definition
+ * ===============================================
+ */
 #ifdef CONFIG_CONTROL_GPU
 int mt_gpufreq_scene_protect(unsigned int min_freq, unsigned int max_freq)
 {
 	int i = 0;
 	bool min_done = false;
 	bool max_done = false;
-	int loop_cnt = 0;
+
 	if (min_freq > max_freq) {
-		gpufreq_pr_err("@%s: GPU DVFS invalid input min_freq:%u max_freq:%u\n",
+		gpufreq_perr("@%s: GPU DVFS invalid input min_freq:%u max_freq:%u\n",
 			__func__, min_freq, max_freq);
 		return -EINVAL;
 	}
+
 	mutex_lock(&mt_gpufreq_lock);
-	for (i = g_segment_max_opp_idx; i <= g_segment_min_opp_idx; i++) {
+	for (i = 0; i < g_max_opp_idx_num; i++) {
+		//max freq
 		if (g_opp_table[i].gpufreq_khz <= max_freq && !max_done) {
 			g_limited_idx_array[IDX_SCENE_LIMITED] = i;
 			max_done = true;
 		}
-		if (g_opp_table[g_segment_min_opp_idx - loop_cnt].gpufreq_khz >= min_freq && !min_done) {
-			g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_segment_min_opp_idx - loop_cnt;
+		//min freq
+		if (g_opp_table[g_max_opp_idx_num - 1 - i].gpufreq_khz >= min_freq && !min_done) {
+			g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_max_opp_idx_num - 1 - i;
 			min_done = true;
 		}
-		loop_cnt++;
-		if(max_done && min_done)
-			break;
 	}
+
 	if (!max_done)
 		g_limited_idx_array[IDX_SCENE_LIMITED] = 0;
 	if (!min_done)
-		g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_segment_min_opp_idx;
+		g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] = g_max_opp_idx_num - 1;
 
-	if (g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] < g_limited_idx_array[IDX_SCENE_LIMITED])
+	// if min freq > max freq
+	if (g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED] <
+		g_limited_idx_array[IDX_SCENE_LIMITED]) {
 		g_limited_idx_array[IDX_SCENE_LIMITED] = g_limited_min_idx_array[IDX_SCENE_MIN_LIMITED];
+	}
 
 	__mt_gpufreq_update_max_limited_idx();
 	__mt_gpufreq_update_min_limited_idx();
@@ -344,26 +376,42 @@ static int mt_gpufreq_power_limited_proc_show(struct seq_file *m, void *v)
 }
 EXPORT_SYMBOL(mt_gpufreq_scene_protect);
 #endif /* CONFIG_CONTROL_GPU */
-#include "ged_log.h"
-#include "ged_base.h"
-
-#if MT_GPUFREQ_GED_READY == 1
-/* the debugging logs are at /d/ged/logbufs/gfreq */
-extern GED_LOG_BUF_HANDLE gpufreq_ged_log;
-#endif
-
-/**
- * ===============================================
- * SECTION : API definition
- * ===============================================
- */
-
 /*
  * API : handle frequency change request
  * @Input : is_real_idx
  *	false : pass by GED DVFS, need to map to internal real index
  *	true  : pass by GPUFREQ, already be real index
  */
+#ifdef CONFIG_CONTROL_GPU
+static u64 mt_gpufreq_time_in_state[32] = {0};
+unsigned int time_in_state_run = 0;
+u64 prev_switch_time = 0;
+
+static int mt_gpufreq_in_time_proc_show(struct seq_file *m, void *v)
+{
+	int i;
+
+	//gpufreq from high to low
+	for (i = 0; i < g_max_opp_idx_num; i++) {
+		seq_printf(m, "%llu ", mt_gpufreq_time_in_state[i] / 1000);
+	}
+	seq_printf(m, "\n");
+
+	return 0;
+}
+
+static int mt_gpufreq_opp_list_proc_show(struct seq_file *m, void *v)
+{
+	int i;
+
+	for (i = 0; i < g_max_opp_idx_num; i++) {
+		seq_printf(m, "%d ", g_opp_table[i].gpufreq_khz);
+	}
+	seq_printf(m, "\n");
+
+	return 0;
+}
+#endif /* CONFIG_CONTROL_GPU */
 unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 {
 	int i;
@@ -371,6 +419,10 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 	unsigned int target_vgpu;
 	unsigned int target_vsram_gpu;
 	unsigned int target_idx;
+
+#ifdef CONFIG_CONTROL_GPU
+	u64 now;
+#endif
 
 	mutex_lock(&mt_gpufreq_lock);
 
@@ -396,7 +448,21 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 		mutex_unlock(&mt_gpufreq_lock);
 		return -1;
 	}
-
+#ifdef CONFIG_CONTROL_GPU
+	//min freq
+	gpufreq_pr_debug("@%s: OPP freq is limited by Thermal/Power/PBM, g_min_limited_idx = %d g_max_opp_idx_num = %d\n",
+					__func__, target_cond_idx, g_max_opp_idx_num);
+	if (g_min_limited_idx != g_max_opp_idx_num - 1) {
+		if (target_freq < g_opp_table[g_min_limited_idx].gpufreq_khz) {
+			target_freq = g_opp_table[g_min_limited_idx].gpufreq_khz;
+			target_volt = g_opp_table[g_min_limited_idx].gpufreq_volt;
+			target_idx = g_opp_table[g_min_limited_idx].gpufreq_idx;
+			target_cond_idx = g_min_limited_idx;
+			gpufreq_pr_debug("@%s: OPP freq is limited by Thermal/Power/PBM, g_min_limited_idx = %d\n",
+					__func__, target_cond_idx);
+		}
+	}
+#endif /* CONFIG_CONTROL_GPU */
 	/* If /proc/gpufreq/gpufreq_fixed_freq_volt fix freq and volt */
 	if (g_fixed_freq_volt_state) {
 		gpufreq_pr_debug(
@@ -457,15 +523,6 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 		}
 	}
 
-#ifdef CONFIG_CONTROL_GPU
-	if (g_min_limited_idx != g_segment_min_opp_idx) {
-		if (target_freq < g_opp_table[g_min_limited_idx].gpufreq_khz) {
-			gpufreq_pr_debug("@%s: target_idx: %d is limited to g_min_limited_idx: %d by Thermal/Power/PBM\n",
-				__func__, target_idx, g_min_limited_idx);
-			target_idx = g_min_limited_idx;
-		}
-	}
-#endif /* CONFIG_CONTROL_GPU */
 	/* If /proc/gpufreq/gpufreq_opp_freq fix OPP freq */
 	if (g_keep_opp_freq_state) {
 		gpufreq_pr_debug(
@@ -512,7 +569,18 @@ unsigned int mt_gpufreq_target(unsigned int request_idx, bool is_real_idx)
 			target_vgpu,
 			g_cur_opp_vsram_gpu,
 			target_vsram_gpu);
-
+#ifdef CONFIG_CONTROL_GPU
+	now = local_clock();
+	if (likely(time_in_state_run == 1)) {
+		if (now > prev_switch_time && target_idx < min((unsigned int)32, g_max_opp_idx_num)) {
+			mt_gpufreq_time_in_state[target_idx] += now - prev_switch_time;
+			prev_switch_time = now;
+		}
+	} else {
+		time_in_state_run = 1;
+		prev_switch_time = now;
+	}
+#endif /* CONFIG_CONTROL_GPU */
 #ifdef MT_GPUFREQ_SRAM_DEBUG
 	aee_rr_rec_gpu_dvfs_oppidx(target_idx);
 #endif
@@ -884,6 +952,9 @@ unsigned int mt_gpufreq_update_volt(
 
 	for (i = 0; i < array_size; i++) {
 		target_idx = mt_gpufreq_get_ori_opp_idx(i);
+		if (target_idx == 12)
+			continue;
+
 		g_opp_table[target_idx].gpufreq_volt = pmic_volt[i];
 		g_opp_table[target_idx].gpufreq_vsram =
 		__mt_gpufreq_get_vsram_gpu_by_vgpu(pmic_volt[i]);
@@ -892,31 +963,18 @@ unsigned int mt_gpufreq_update_volt(
 			/* interpolation for opps not for ptpod */
 			int larger = pmic_volt[i];
 			int smaller = pmic_volt[i + 1];
-			int interpolation;
-			if (target_idx == 0 ||
-				target_idx == 3) {
-				/* After opp 20, 2 opps need intepolation */
-				interpolation =	((larger << 1) + smaller) / 3;
-				g_opp_table[target_idx + 1].gpufreq_volt =
-				VOLT_NORMALIZATION(interpolation);
-				g_opp_table[target_idx + 1].gpufreq_vsram =
-				__mt_gpufreq_get_vsram_gpu_by_vgpu(
-				g_opp_table[target_idx + 1].gpufreq_volt);
-
-				interpolation =	(larger + (smaller << 1)) / 3;
-				g_opp_table[target_idx + 2].gpufreq_volt =
-				VOLT_NORMALIZATION(interpolation);
-				g_opp_table[target_idx + 2].gpufreq_vsram =
-				__mt_gpufreq_get_vsram_gpu_by_vgpu(
-				g_opp_table[target_idx + 2].gpufreq_volt);
-			} else if (target_idx != 28 &&
-				target_idx != 29) {
-				interpolation =	(larger + smaller) >> 1;
-				g_opp_table[target_idx + 1].gpufreq_volt =
-				VOLT_NORMALIZATION(interpolation);
-				g_opp_table[target_idx + 1].gpufreq_vsram =
-				__mt_gpufreq_get_vsram_gpu_by_vgpu(
-				g_opp_table[target_idx + 1].gpufreq_volt);
+			if (target_idx == 0) {
+				/* At opp 0, 14 opps need intepolation */
+				smaller = pmic_volt[2];
+				__mt_gpufreq_update_intepolating_volt(
+				target_idx, larger, smaller, 15);
+			} else if (target_idx == 15) {
+				/* At opp 15, 2 opps need intepolation */
+				__mt_gpufreq_update_intepolating_volt(
+				target_idx, larger, smaller, 3);
+			} else {
+				__mt_gpufreq_update_intepolating_volt(
+				target_idx, larger, smaller, 2);
 			}
 		}
 	}
@@ -946,20 +1004,20 @@ unsigned int mt_gpufreq_get_dvfs_table_num(void)
 {
 	return g_segment_min_opp_idx - g_segment_max_opp_idx + 1;
 }
-
-/* API : get real OPP table index number */
-unsigned int mt_gpufreq_get_real_dvfs_table_num(void)
-{
-	return g_max_opp_idx_num;
-}
 #ifdef CONFIG_CONTROL_GPU
 EXPORT_SYMBOL(mt_gpufreq_get_dvfs_table_num);
+/* API : get OPP table */
 struct g_opp_table_info *mt_gpufreq_get_dvfs_table(void)
 {
 	return g_opp_table;
 }
 EXPORT_SYMBOL(mt_gpufreq_get_dvfs_table);
 #endif /* CONFIG_CONTROL_GPU */
+/* API : get real OPP table index number */
+unsigned int mt_gpufreq_get_real_dvfs_table_num(void)
+{
+	return g_max_opp_idx_num;
+}
 
 /* API : get frequency via OPP table index */
 /* need to add g_segment_max_opp_idx to map to real idx */
@@ -971,9 +1029,6 @@ unsigned int mt_gpufreq_get_freq_by_idx(unsigned int idx)
 	else
 		return 0;
 }
-#ifdef CONFIG_CONTROL_GPU
-EXPORT_SYMBOL(mt_gpufreq_get_freq_by_idx);
-#endif /* CONFIG_CONTROL_GPU */
 
 /* API : get frequency via OPP table real index */
 unsigned int mt_gpufreq_get_freq_by_real_idx(unsigned int idx)
@@ -1083,15 +1138,15 @@ unsigned int mt_gpufreq_get_thermal_limit_max_index(void)
 	return mt_gpufreq_get_thermal_limit_index();
 }
 EXPORT_SYMBOL(mt_gpufreq_get_thermal_limit_max_index);
+
 unsigned int mt_gpufreq_get_thermal_limit_min_index(void)
 {
 	gpufreq_pr_debug("@%s: current GPU Thermal/Power/PBM limit min index is %d\n",
-			__func__, g_min_limited_idx - g_segment_max_opp_idx);
-	return g_min_limited_idx - g_segment_max_opp_idx;
+			__func__, g_min_limited_idx);
+	return g_min_limited_idx;
 }
 EXPORT_SYMBOL(mt_gpufreq_get_thermal_limit_min_index);
 #endif /* CONFIG_CONTROL_GPU */
-
 /*
  * API : get current Thermal/Power/PBM limited OPP table frequency
  */
@@ -1109,7 +1164,6 @@ unsigned int mt_gpufreq_get_min_limit_freq(void)
 }
 EXPORT_SYMBOL(mt_gpufreq_get_min_limit_freq);
 #endif /*CONFIG_CONTROL_GPU */
-
 /*
  * API : get current OPP table conditional index
  */
@@ -1404,28 +1458,6 @@ void mt_gpufreq_power_limit_notify_registerCB(gpufreq_power_limit_notify pCB)
  * ===============================================
  */
 
-#ifdef CONFIG_CONTROL_GPU
-//qinyonghui@shanghai. 2019/11/2. Add max/min freq information proc show
-static int mt_max_freq_proc_show(struct seq_file *m, void *v)
-{
-	seq_printf(m, "%d\n", g_opp_table[g_segment_max_opp_idx].gpufreq_khz);
-	return 0;
-}
-
-static int mt_min_freq_proc_show(struct seq_file *m, void *v)
-{
-	seq_printf(m, "%d\n", g_opp_table[g_segment_min_opp_idx].gpufreq_khz);
-	return 0;
-}
-
-static int mt_cur_freq_proc_show(struct seq_file *m, void *v)
-{
-	seq_printf(m, "%d\n", g_cur_opp_freq);
-	return 0;
-}
-#endif /* CONFIG_CONTROL_GPU */
-
-
 #ifdef CONFIG_PROC_FS
 /*
  * PROCFS : show OPP table
@@ -1454,7 +1486,29 @@ static int mt_gpufreq_opp_dump_proc_show(struct seq_file *m, void *v)
 
 	return 0;
 }
+#ifdef CONFIG_CONTROL_GPU
+static int mt_max_freq_proc_show(struct seq_file *m, void *v)
+{
+	int max_gpu_freq;
+	int i;
 
+	i = g_max_limited_idx;
+	max_gpu_freq = g_opp_table[i].gpufreq_khz;
+	seq_printf(m, "%d\n", max_gpu_freq);
+	return 0;
+}
+
+static int mt_min_freq_proc_show(struct seq_file *m, void *v)
+{
+	int min_gpu_freq;
+	int i;
+
+	i = g_min_limited_idx;
+	min_gpu_freq = g_opp_table[i].gpufreq_khz;
+	seq_printf(m, "%d\n", min_gpu_freq);
+	return 0;
+}
+#endif /* CONFIG_CONTROL_GPU */
 /*
  * PROCFS : show springboard table
  */
@@ -1531,7 +1585,13 @@ static int mt_gpufreq_var_dump_proc_show(struct seq_file *m, void *v)
 
 	return 0;
 }
-
+#ifdef CONFIG_CONTROL_GPU
+static int mt_cur_freq_proc_show(struct seq_file *m, void *v)
+{
+	seq_printf(m, "%d\n", g_cur_opp_freq);
+	return 0;
+}
+#endif /* CONFIG_CONTROL_GPU */
 /*
  * PROCFS : show current opp stress test state
  */
@@ -1972,16 +2032,19 @@ PROC_FOPS_RW(gpufreq_power_limited);
 PROC_FOPS_RO(gpufreq_opp_dump);
 PROC_FOPS_RW(gpufreq_opp_freq);
 PROC_FOPS_RO(gpufreq_var_dump);
-PROC_FOPS_RW(gpufreq_fixed_freq_volt);
-PROC_FOPS_RO(gpufreq_sb_idx);
-PROC_FOPS_RW(gpufreq_aging_test);
 #ifdef CONFIG_CONTROL_GPU
-//huxiaokai@shanghai. 2019/6/24. add max/min/cur gpufreq information show
+PROC_FOPS_RO(gpufreq_in_time);
+PROC_FOPS_RO(gpufreq_opp_list);
+#endif
+#ifdef CONFIG_CONTROL_GPU
 PROC_FOPS_RO(max_freq);
 PROC_FOPS_RO(min_freq);
 PROC_FOPS_RO(cur_freq);
 PROC_FOPS_RW(gpu_control);
 #endif /* CONFIG_CONTROL_GPU */
+PROC_FOPS_RW(gpufreq_fixed_freq_volt);
+PROC_FOPS_RO(gpufreq_sb_idx);
+PROC_FOPS_RW(gpufreq_aging_test);
 
 static int __mt_gpufreq_create_procfs(void)
 {
@@ -1999,17 +2062,19 @@ static int __mt_gpufreq_create_procfs(void)
 		PROC_ENTRY(gpufreq_opp_dump),
 		PROC_ENTRY(gpufreq_opp_freq),
 		PROC_ENTRY(gpufreq_var_dump),
+#ifdef CONFIG_CONTROL_GPU
+		PROC_ENTRY(gpufreq_in_time),
+		PROC_ENTRY(gpufreq_opp_list),
+#endif /* CONFIG_CONTROL_GPU */
+#ifdef CONFIG_CONTROL_GPU
+		PROC_ENTRY(max_freq),
+		PROC_ENTRY(gpu_control),
+		PROC_ENTRY(min_freq),
+		PROC_ENTRY(cur_freq),
+#endif /* CONFIG_CONTROL_GPU */
 		PROC_ENTRY(gpufreq_fixed_freq_volt),
 		PROC_ENTRY(gpufreq_sb_idx),
 		PROC_ENTRY(gpufreq_aging_test),
-#ifdef CONFIG_CONTROL_GPU
-//huxiaokai@shanghai. hypnus. 2019/6/24. add max/min/cur gpu freq.
-		PROC_ENTRY(max_freq),
-		PROC_ENTRY(min_freq),
-		PROC_ENTRY(cur_freq),
-		PROC_ENTRY(gpu_control),
-#endif /* CONFIG_CONTROL_GPU */
-
 	};
 
 	dir = proc_mkdir("gpufreq", NULL);
@@ -2051,11 +2116,11 @@ void __mt_gpufreq_update_aging(bool apply_aging_setting)
 
 	if (apply_aging_setting) {
 		for (i = 0; i < g_max_opp_idx_num; i++) {
-			if (i >= 0 && i <= 6)
+			if (i >= 0 && i <= 23)
 				g_opp_table[i].gpufreq_volt -= 1875;
-			else if (i >= 7 && i <= 19)
+			else if (i >= 24 && i <= 33)
 				g_opp_table[i].gpufreq_volt -= 1250;
-			else if (i >= 20 && i <= 30)
+			else if (i >= 34 && i <= 42)
 				g_opp_table[i].gpufreq_volt -= 625;
 
 			g_opp_table[i].gpufreq_vsram =
@@ -2072,11 +2137,11 @@ void __mt_gpufreq_update_aging(bool apply_aging_setting)
 		}
 	} else {
 		for (i = 0; i < g_max_opp_idx_num; i++) {
-			if (i >= 0 && i <= 6)
+			if (i >= 0 && i <= 23)
 				g_opp_table[i].gpufreq_volt += 1875;
-			else if (i >= 7 && i <= 19)
+			else if (i >= 24 && i <= 33)
 				g_opp_table[i].gpufreq_volt += 1250;
-			else if (i >= 20 && i <= 30)
+			else if (i >= 34 && i <= 42)
 				g_opp_table[i].gpufreq_volt += 625;
 
 			g_opp_table[i].gpufreq_vsram =
@@ -2107,7 +2172,7 @@ static void __mt_gpufreq_cal_sb_opp_index(void)
 
 	/* find 0.850(V) index */
 	for (i = 0; i < g_max_opp_idx_num; i++) {
-		if (g_opp_table[i].gpufreq_vsram == SEG_GPU_DVFS_VSRAM8) {
+		if (g_opp_table[i].gpufreq_vsram == SEG_GPU_DVFS_VSRAM20) {
 			min_vsram_idx = i;
 			break;
 		}
@@ -2920,6 +2985,26 @@ static unsigned int __mt_gpufreq_get_vsram_gpu_by_vgpu(unsigned int vgpu)
 }
 
 /*
+ * update intepolating voltage via given vgpu
+ */
+static void __mt_gpufreq_update_intepolating_volt(
+		unsigned int idx, unsigned int high,
+		unsigned int low, int factor)
+{
+	int intepolating_volt, i;
+
+	for (i = 1; i < factor; i++) {
+		intepolating_volt =
+		((high * (factor - i)) + low * (i)) / factor;
+		g_opp_table[idx + i].gpufreq_volt =
+		VOLT_NORMALIZATION(intepolating_volt);
+		g_opp_table[idx + i].gpufreq_vsram =
+		__mt_gpufreq_get_vsram_gpu_by_vgpu(
+		g_opp_table[idx + i].gpufreq_volt);
+	}
+}
+
+/*
  * get limited frequency by limited power (mW)
  */
 static unsigned int __mt_gpufreq_get_limited_freq_by_power(
@@ -3013,12 +3098,12 @@ static void __mt_gpufreq_update_max_limited_idx(void)
 			__func__,
 			g_max_limited_idx);
 }
-
 #ifdef CONFIG_CONTROL_GPU
 static void __mt_gpufreq_update_min_limited_idx(void)
 {
 	int i = 0;
-	unsigned limited_idx = g_segment_min_opp_idx;
+	unsigned limited_idx = g_max_opp_idx_num - 1;
+
 	for (i = 0; i < NR_IDX_POWER_MIN_LIMITED; i++) {
 		if (g_limited_min_idx_array[i] < limited_idx)
 			limited_idx = g_limited_min_idx_array[i];
@@ -3026,7 +3111,7 @@ static void __mt_gpufreq_update_min_limited_idx(void)
 			i, g_limited_min_idx_array[i]);
 	}
 	g_min_limited_idx = limited_idx;
-	gpufreq_pr_info("Final limit frequency lower bound to id = %d, freq = %d\n",
+	gpufreq_pr_debug("Final limit frequency lower bound to id = %d, freq = %d\n",
 			g_min_limited_idx, g_opp_table[g_min_limited_idx].gpufreq_khz);
 }
 #endif
@@ -3204,26 +3289,29 @@ static void __mt_gpufreq_setup_opp_table(
 	}
 
 	/* setup OPP table by device ID */
-	if (g_segment_id == MT6785T_SEGMENT)
-		g_segment_max_opp_idx = 3;
+	if (g_segment_id == MT6785U_SEGMENT)
+		g_segment_max_opp_idx = 0;
+	else if (g_segment_id == MT6785T_SEGMENT)
+		g_segment_max_opp_idx = 15;
 	else if (g_segment_id == MT6785_SEGMENT)
-		g_segment_max_opp_idx = 9;
+		g_segment_max_opp_idx = 21;
 	else if (g_segment_id == MT6783_SEGMENT)
-		g_segment_max_opp_idx = 18;
+		g_segment_max_opp_idx = 30;
 	else
-		g_segment_max_opp_idx = 3;
+		g_segment_max_opp_idx = 15;
 
 	g_segment_min_opp_idx = NUM_OF_OPP_IDX - 1;
 
 	g_max_opp_idx_num = num;
 	g_max_limited_idx = g_segment_max_opp_idx;
+#ifdef CONFIG_CONTROL_GPU
+	g_min_limited_idx = g_max_opp_idx_num - 1;
+#endif /* CONFIG_CONTROL_GPU */
 	g_DVFS_off_by_ptpod_idx = g_segment_max_opp_idx;
 
 	g_ptpod_opp_idx_table = g_ptpod_opp_idx_table_segment;
 	g_ptpod_opp_idx_num = ARRAY_SIZE(g_ptpod_opp_idx_table_segment);
-#ifdef CONFIG_CONTROL_GPU
-	g_min_limited_idx = g_segment_min_opp_idx;
-#endif /* CONFIG_CONTROL_GPU */
+
 	gpufreq_pr_debug(
 			"@%s: g_segment_max_opp_idx = %u, g_max_opp_idx_num = %u, g_segment_min_opp_idx = %u\n",
 			__func__,
@@ -3552,6 +3640,9 @@ static void __mt_gpufreq_init_efuse(void)
 		g_efuse_id == 0x20 ||
 		g_efuse_id == 0x04) {
 		g_segment_id = MT6785_SEGMENT;
+	} else if (g_efuse_id == 0xE0 ||
+		g_efuse_id == 0x07) {
+		g_segment_id = MT6785U_SEGMENT;
 	} else {
 		g_segment_id = MT6785T_SEGMENT;
 	}
