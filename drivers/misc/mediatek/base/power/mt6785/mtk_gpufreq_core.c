@@ -366,8 +366,9 @@ static ssize_t mt_gpu_control_proc_write(struct file *file,
 out:
 	return (ret < 0) ? ret : count;
 }
-static int mt_gpu_control_proc_proc_show(struct seq_file *m, void *v)
+static int mt_gpu_control_proc_show(struct seq_file *m, void *v)
 {
+	seq_printf(m, "%d %d\n", g_opp_table[g_segment_min_opp_idx].gpufreq_khz , g_opp_table[g_segment_max_opp_idx].gpufreq_khz);
 	return 0;
 }
 EXPORT_SYMBOL(mt_gpufreq_scene_protect);
