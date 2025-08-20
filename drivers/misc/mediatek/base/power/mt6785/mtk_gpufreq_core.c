@@ -342,7 +342,7 @@ static int mt_set_gpu_freq_limit(u32 gpu_index, u32 min_freq, u32 max_freq)
 	return 0;
 }
 
-static ssize_t mt_gpu_control_write(struct file *file,
+static ssize_t mt_gpu_control_proc_write(struct file *file,
         const char __user *buffer, size_t count, loff_t *ppos)
 {
 	char buf[64];
