@@ -370,7 +370,10 @@ static ssize_t mt_gpu_control_proc_write(struct file *file,
 out:
 	return (ret < 0) ? ret : count;
 }
-
+static int mt_gpufreq_power_limited_proc_show(struct seq_file *m, void *v)
+{
+	return 0;
+}
 EXPORT_SYMBOL(mt_gpufreq_scene_protect);
 #endif /* CONFIG_CONTROL_GPU */
 /*
