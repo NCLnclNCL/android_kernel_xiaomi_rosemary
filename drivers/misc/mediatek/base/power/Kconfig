@@ -7,7 +7,7 @@ config MTK_CPU_FREQ
 	  changed which will depended on CPU FREQ governor.
 	  If unsure, say N.
 config CONTROL_GPU
-	bool CONTROL GPU
+	bool "CONTROL GPU"
 	default n
 	---help---
 	   Control gpu clock
