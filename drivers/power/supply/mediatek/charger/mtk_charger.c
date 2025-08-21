@@ -2954,9 +2954,9 @@ static int is_charging_disabled( int capacity)
 			disable_charging = 1;
 		if(pinfo->cmd_discharging == false)
 		{
-			info->cmd_discharging = false;
-			charger_dev_enable(info->chg1_dev, true);
-			charger_manager_notifier(info,
+			pinfo->cmd_discharging = false;
+			charger_dev_enable(pinfo->chg1_dev, true);
+			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_START_CHARGING);
 		}
 		pinfo->lowerdb_reached = false;
@@ -2966,9 +2966,9 @@ static int is_charging_disabled( int capacity)
 			disable_charging = 1;
 		if(pinfo->cmd_discharging == false)
 		{
-			info->cmd_discharging = true;
-			charger_dev_enable(info->chg1_dev, false);
-			charger_manager_notifier(info,
+			pinfo->cmd_discharging = true;
+			charger_dev_enable(pinfo->chg1_dev, false);
+			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_STOP_CHARGING);
 		}
 		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
@@ -2978,9 +2978,9 @@ static int is_charging_disabled( int capacity)
 		pinfo->lowerdb_reached = true;
 		if(pinfo->cmd_discharging == true)
 		{
-			info->cmd_discharging = false;
-			charger_dev_enable(info->chg1_dev, true);
-			charger_manager_notifier(info,
+			pinfo->cmd_discharging = false;
+			charger_dev_enable(pinfo->chg1_dev, true);
+			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_START_CHARGING);
 		}
 		} else {
@@ -2988,9 +2988,9 @@ static int is_charging_disabled( int capacity)
 				__func__, lowerbd, upperbd, capacity);
 		if(pinfo->cmd_discharging == true)
 		{
-			info->cmd_discharging = false;
-			charger_dev_enable(info->chg1_dev, true);
-			charger_manager_notifier(info,
+			pinfo->cmd_discharging = false;
+			charger_dev_enable(pinfo->chg1_dev, true);
+			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_START_CHARGING);
 		}
 		}
