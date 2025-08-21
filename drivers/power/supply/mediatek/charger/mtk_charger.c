@@ -2943,21 +2943,26 @@ static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
 	    (upperbd <= DEFAULT_CHARGE_STOP_LEVEL) &&
 	    (lowerbd >= DEFAULT_CHARGE_START_LEVEL)) {
 		if (pinfo->lowerdb_reached && upperbd <= capacity) {
-			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
+			mtk_chaging_enable_write(0);
 		pinfo->lowerdb_reached = false;
 		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
-			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
+			mtk_chaging_enable_write(0);
 		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
-			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
 		__func__, lowerbd, upperbd, capacity);
+			mtk_chaging_enable_write(1);
 		pinfo->lowerdb_reached = true;
+		mtk_chaging_enable_write(1);
 		} else {
-			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
 				__func__, lowerbd, upperbd, capacity);
+			mtk_chaging_enable_write(1);
 		}
 	}
 
@@ -2983,7 +2988,7 @@ static void chg_work(void *arg)
 	else
 		disable_pwrsrc = false;
 
-	//if (disable_charging != chg_drv->disable_charging) {
+	//if (disable_charging != pinfo->disable_charger) {
 	//	pr_info("set disable_charging(%d)", disable_charging);
 	//	power_supply_set_property(chg_psy, POWER_SUPPLY_PROP_CHARGE_DISABLE,
 	//		     disable_charging);
