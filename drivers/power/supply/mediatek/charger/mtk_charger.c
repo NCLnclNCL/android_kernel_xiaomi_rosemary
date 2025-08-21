@@ -2952,35 +2952,46 @@ static int is_charging_disabled( int capacity)
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-		if(pinfo->cmd_discharging == true)
+		if(pinfo->cmd_discharging == false)
 		{
-				mtk_chaging_enable_write(0);
+			info->cmd_discharging = false;
+			charger_dev_enable(info->chg1_dev, true);
+			charger_manager_notifier(info,
+						CHARGER_NOTIFY_START_CHARGING);
 		}
-
 		pinfo->lowerdb_reached = false;
 		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-		if(pinfo->cmd_discharging == true)
+		if(pinfo->cmd_discharging == false)
 		{
-				mtk_chaging_enable_write(0);
+			info->cmd_discharging = true;
+			charger_dev_enable(info->chg1_dev, false);
+			charger_manager_notifier(info,
+						CHARGER_NOTIFY_STOP_CHARGING);
 		}
 		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
 		__func__, lowerbd, upperbd, capacity);
 			
 		pinfo->lowerdb_reached = true;
-		if(pinfo->cmd_discharging == false)
+		if(pinfo->cmd_discharging == true)
 		{
-	mtk_chaging_enable_write(1);
+			info->cmd_discharging = false;
+			charger_dev_enable(info->chg1_dev, true);
+			charger_manager_notifier(info,
+						CHARGER_NOTIFY_START_CHARGING);
 		}
 		} else {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
 				__func__, lowerbd, upperbd, capacity);
-		if(pinfo->cmd_discharging == false)
+		if(pinfo->cmd_discharging == true)
 		{
-		mtk_chaging_enable_write(1);
+			info->cmd_discharging = false;
+			charger_dev_enable(info->chg1_dev, true);
+			charger_manager_notifier(info,
+						CHARGER_NOTIFY_START_CHARGING);
 		}
 		}
 	}
@@ -4640,7 +4651,7 @@ static ssize_t show_charge_start_level(struct device *dev,
 {
 //struct charger_manager *pinfo = dev->driver_data;
 
-	pr_debug("[Battery] show_charge_start_level: 0x%x\n", pinfo->charge_start_level);
+	pr_debug("[Battery] show_charge_start_level:  %d\n", pinfo->charge_start_level);
 
 	return sprintf(buf, "%u\n", pinfo->charge_start_level);
 }
@@ -4661,7 +4672,7 @@ static ssize_t store_charge_start_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_start_level = reg;
-	pr_info("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
+	pr_info("[Battery] store code:  %d\n", pinfo->charge_start_level);
 //mtk_chgstat_notify(pinfo);
 	}
 	if (pinfo->battery_psy)
@@ -4677,7 +4688,7 @@ static ssize_t show_charge_stop_level(struct device *dev,
 {
 //struct charger_manager *pinfo = dev->driver_data;
 
-	pr_debug("[Battery] show_charge_stop_level: 0x%x\n", pinfo->charge_stop_level);
+	pr_debug("[Battery] show_charge_stop_level: %d\n", pinfo->charge_stop_level);
 
 	return sprintf(buf, "%u\n", pinfo->charge_stop_level);
 }
@@ -4698,7 +4709,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_stop_level = reg;
-	pr_info("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
+	pr_info("[Battery] store code:  %d\n", pinfo->charge_stop_level);
 //tk_chgstat_notify(pinfo);
 	}
 	if (pinfo->battery_psy)
