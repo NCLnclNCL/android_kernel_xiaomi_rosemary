@@ -4603,7 +4603,79 @@ static ssize_t mtk_chg_en_safety_timer_write(struct file *file,
 PROC_FOPS_RW(current_cmd);
 PROC_FOPS_RW(en_power_path);
 PROC_FOPS_RW(en_safety_timer);
+#ifdef CONFIG_LIMIT_CHARGER
+static ssize_t show_charge_start_level(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct charger_manager *pinfo = dev->driver_data;
 
+	pr_debug("[Battery] show_charge_start_level: 0x%x\n", pinfo->charge_start_level);
+
+	return sprintf(buf, "%u\n", pinfo->charge_start_level);
+}
+
+static ssize_t store_charge_start_level(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+	unsigned int reg = 0;
+	int ret;
+
+	pr_debug("[Battery] store_charge_start_level\n");
+	if (buf != NULL && size != 0) {
+		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
+		ret = kstrtouint(buf, 16, &reg);
+	if ((reg == pinfo->charge_start_level) ||
+	    (reg >= pinfo->charge_stop_level) ||
+	    (reg < DEFAULT_CHARGE_START_LEVEL))
+			return size;
+	pinfo->charge_start_level = reg;
+	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
+	mtk_chgstat_notify(pinfo);
+	}
+	if (pinfo->battery_psy)
+		power_supply_changed(pinfo->battery_psy);
+	return size;
+}
+static DEVICE_ATTR(charge_start_level, 0644, show_charge_start_level, store_charge_start_level);
+//stop
+static ssize_t show_charge_stop_level(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+
+	pr_debug("[Battery] show_charge_stop_level: 0x%x\n", pinfo->charge_stop_level);
+
+	return sprintf(buf, "%u\n", pinfo->charge_stop_level);
+}
+
+static ssize_t store_charge_stop_level(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+	unsigned int reg = 0;
+	int ret;
+
+	pr_debug("[Battery] store_charge_stop_level\n");
+	if (buf != NULL && size != 0) {
+		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
+		ret = kstrtouint(buf, 16, &reg);
+	if ((reg == pinfo->charge_stop_level) ||
+	    (reg <= pinfo->charge_start_level) ||
+	    (reg > DEFAULT_CHARGE_STOP_LEVEL))
+		return size;
+	pinfo->charge_stop_level = reg;
+	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
+	mtk_chgstat_notify(pinfo);
+	}
+	if (pinfo->battery_psy)
+		power_supply_changed(pinfo->battery_psy);
+	return size;
+}
+//
+
+static DEVICE_ATTR(charge_stop_level, 0644, show_charge_stop_level, store_charge_stop_level);
+#endif
 /* Create sysfs and procfs attributes */
 static int mtk_charger_setup_files(struct platform_device *pdev)
 {
@@ -5361,79 +5433,7 @@ static void mtk_charger_shutdown(struct platform_device *dev)
 	cancel_delayed_work_sync(&info->dcp_confirm_work);
 	cancel_work_sync(&info->batt_verify_update_work);
 }
-#ifdef CONFIG_LIMIT_CHARGER
-static ssize_t show_charge_start_level(struct device *dev,
-		struct device_attribute *attr, char *buf)
-{
-	struct charger_manager *pinfo = dev->driver_data;
 
-	pr_debug("[Battery] show_charge_start_level: 0x%x\n", pinfo->charge_start_level);
-
-	return sprintf(buf, "%u\n", pinfo->charge_start_level);
-}
-
-static ssize_t store_charge_start_level(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct charger_manager *pinfo = dev->driver_data;
-	unsigned int reg = 0;
-	int ret;
-
-	pr_debug("[Battery] store_charge_start_level\n");
-	if (buf != NULL && size != 0) {
-		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
-		ret = kstrtouint(buf, 16, &reg);
-	if ((reg == pinfo->charge_start_level) ||
-	    (reg >= pinfo->charge_stop_level) ||
-	    (reg < DEFAULT_CHARGE_START_LEVEL))
-			return size;
-	pinfo->charge_start_level = reg;
-	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
-	mtk_chgstat_notify(pinfo);
-	}
-	if (pinfo->battery_psy)
-		power_supply_changed(pinfo->battery_psy);
-	return size;
-}
-static DEVICE_ATTR(charge_start_level, 0644, show_charge_start_level, store_charge_start_level);
-//stop
-static ssize_t show_charge_stop_level(struct device *dev,
-		struct device_attribute *attr, char *buf)
-{
-	struct charger_manager *pinfo = dev->driver_data;
-
-	pr_debug("[Battery] show_charge_stop_level: 0x%x\n", pinfo->charge_stop_level);
-
-	return sprintf(buf, "%u\n", pinfo->charge_stop_level);
-}
-
-static ssize_t store_charge_stop_level(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct charger_manager *pinfo = dev->driver_data;
-	unsigned int reg = 0;
-	int ret;
-
-	pr_debug("[Battery] store_charge_stop_level\n");
-	if (buf != NULL && size != 0) {
-		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
-		ret = kstrtouint(buf, 16, &reg);
-	if ((reg == pinfo->charge_stop_level) ||
-	    (reg <= pinfo->charge_start_level) ||
-	    (reg > DEFAULT_CHARGE_STOP_LEVEL))
-		return size;
-	pinfo->charge_stop_level = reg;
-	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
-	mtk_chgstat_notify(pinfo);
-	}
-	if (pinfo->battery_psy)
-		power_supply_changed(pinfo->battery_psy);
-	return size;
-}
-//
-
-static DEVICE_ATTR(charge_stop_level, 0644, show_charge_stop_level, store_charge_stop_level);
-#endif
 static const struct of_device_id mtk_charger_of_match[] = {
 	{.compatible = "mediatek,charger",},
 	{},
