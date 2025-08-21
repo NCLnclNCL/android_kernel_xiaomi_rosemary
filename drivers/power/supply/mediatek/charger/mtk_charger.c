@@ -4518,8 +4518,7 @@ static ssize_t mtk_chg_current_cmd_write(struct file *file,
 
 	desc[len] = '\0';
 
-	if (sscanf(desc, "%d %d", &current_unlimited
-	, &cmd_discharging) == 2) {
+	if (sscanf(desc, "%d %d", &current_unlimited, &cmd_discharging) == 2) {
 		info->usb_unlimited = current_unlimited;
 		if (cmd_discharging == 1) {
 			info->cmd_discharging = true;
