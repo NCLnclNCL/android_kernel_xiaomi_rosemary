@@ -4672,7 +4672,7 @@ static ssize_t store_charge_start_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_start_level = reg;
-	pr_info("[Battery] store code regs : %d\n", reg)
+	pr_info("[Battery] store code regs : %d\n", reg);
 	pr_info("[Battery] store code store_charge_start_level:  %d\n", pinfo->charge_start_level);
 //mtk_chgstat_notify(pinfo);
 	}
@@ -4698,7 +4698,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
 //struct charger_manager *pinfo = dev->driver_data;
-	unsigned int reg = 0;
+	 int reg = 0;
 	int ret;
 	if (pinfo == NULL)
 	{
@@ -4710,7 +4710,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_stop_level = reg;
-	pr_info("[Battery] store code reg : %d\n", reg)
+	pr_info("[Battery] store code reg : %d\n", reg);
 	pr_info("[Battery] store code store_charge_stop_level : %d\n", pinfo->charge_stop_level);
 	}
 	if (pinfo->battery_psy)
