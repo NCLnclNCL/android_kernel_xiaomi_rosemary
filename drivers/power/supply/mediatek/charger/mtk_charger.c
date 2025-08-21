@@ -5382,7 +5382,7 @@ static ssize_t store_charge_start_level(struct device *dev,
 	if ((reg == pinfo->charge_start_level) ||
 	    (reg >= pinfo->charge_stop_level) ||
 	    (reg < DEFAULT_CHARGE_START_LEVEL))
-			return count;
+			return size;
 	pinfo->charge_start_level = reg;
 	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
 	mtk_chgstat_notify(pinfo);
@@ -5416,7 +5416,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 	if ((reg == pinfo->charge_stop_level) ||
 	    (reg <= pinfo->charge_start_level) ||
 	    (reg > DEFAULT_CHARGE_STOP_LEVEL))
-		return count;
+		return size;
 	pinfo->charge_stop_level = reg;
 	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
 	mtk_chgstat_notify(pinfo);
