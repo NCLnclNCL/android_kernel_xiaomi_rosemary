@@ -2936,6 +2936,7 @@ static int is_charging_disabled( int capacity)
 	if (pinfo == NULL)
 	{
 		chr_err("pinfo==NULL\n");
+		return disable_charging;
 	}
 	pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity);
@@ -3003,6 +3004,8 @@ static void chg_work(void *arg)
 	{
 		chr_err("pinfo==NULL\n");
 	}
+	else
+	{
 	disable_charging = is_charging_disabled( pval.intval);
 	if (disable_charging && pval.intval > pinfo->charge_stop_level)
 		disable_pwrsrc = true;
@@ -3015,7 +3018,8 @@ static void chg_work(void *arg)
 	//		     disable_charging);
 	//}
 	pinfo->disable_charger = disable_pwrsrc;
-out:
+	}
+	out:
 ;
 }
 #endif
@@ -4650,6 +4654,7 @@ static ssize_t store_charge_start_level(struct device *dev,
 	if (pinfo == NULL)
 	{
 		chr_err("pinfo==NULL\n");
+		return size;
 	}
 	pr_debug("[Battery] store_charge_start_level\n");
 	if (buf != NULL && size != 0) {
@@ -4686,6 +4691,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 	if (pinfo == NULL)
 	{
 		chr_err("pinfo==NULL\n");
+		return size;
 	}
 	pr_debug("[Battery] store_charge_stop_level\n");
 	if (buf != NULL && size != 0) {
