@@ -2966,6 +2966,7 @@ static void chg_work(void *arg)
 {
 	bool disable_pwrsrc = false;
 	int disable_charging = 0;
+	union power_supply_propval pval = {0,};
 	struct charger_manager *pinfo = arg;
 	rc = power_supply_get_property(pinfo->bms_psy,
 			POWER_SUPPLY_PROP_CAPACITY, &pval);
