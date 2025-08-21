@@ -2955,11 +2955,7 @@ pr_info("%s: info -- lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity,s_pingpong );
 			disable_charging = 1;
 		if((pinfo->cmd_discharging == false)||s_pingpong==1)
-		{
-			pinfo->cmd_discharging = true;
-			charger_dev_enable(pinfo->chg1_dev, false);
-			charger_manager_notifier(pinfo,
-						CHARGER_NOTIFY_STOP_CHARGING);
+		{mtk_chaging_enable_write(0);
 		}
 		s_pingpong = 0;
 		} else if (s_pingpong == 0  && lowerbd < capacity) {
@@ -2968,10 +2964,7 @@ pr_info("%s: info -- lowerbd=%d, upperbd=%d, capacity=%d\n",
 			disable_charging = 1;
 		if(pinfo->cmd_discharging == false)
 		{
-			pinfo->cmd_discharging = true;
-			charger_dev_enable(pinfo->chg1_dev, false);
-			charger_manager_notifier(pinfo,
-						CHARGER_NOTIFY_STOP_CHARGING);
+mtk_chaging_enable_write(0);
 		}
 		
 		} else if (s_pingpong == 0 && capacity <= lowerbd) {
@@ -2981,10 +2974,7 @@ pr_info("%s: info -- lowerbd=%d, upperbd=%d, capacity=%d\n",
 		
 		if((pinfo->cmd_discharging == true)||s_pingpong==0)
 		{
-			pinfo->cmd_discharging = false;
-			charger_dev_enable(pinfo->chg1_dev, true);
-			charger_manager_notifier(pinfo,
-						CHARGER_NOTIFY_START_CHARGING);
+mtk_chaging_enable_write(1);
 		}
 		s_pingpong = 1;
 		} else {
@@ -2992,10 +2982,7 @@ pr_info("%s: info -- lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity,s_pingpong );
 		if(pinfo->cmd_discharging == true)
 		{
-			pinfo->cmd_discharging = false;
-			charger_dev_enable(pinfo->chg1_dev, true);
-			charger_manager_notifier(pinfo,
-						CHARGER_NOTIFY_START_CHARGING);
+mtk_chaging_enable_write(1);
 		}
 
 		}
@@ -4531,7 +4518,8 @@ static ssize_t mtk_chg_current_cmd_write(struct file *file,
 
 	desc[len] = '\0';
 
-	if (sscanf(desc, "%d %d", &current_unlimited, &cmd_discharging) == 2) {
+	if (sscanf(desc, "%d %d", &
+	, &cmd_discharging) == 2) {
 		info->usb_unlimited = current_unlimited;
 		if (cmd_discharging == 1) {
 			info->cmd_discharging = true;
