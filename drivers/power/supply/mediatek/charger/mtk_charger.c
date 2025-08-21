@@ -2962,17 +2962,18 @@ static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
 
 	return disable_charging;
 }
-static void chg_work()
+static void chg_work(void *arg)
 {
 	bool disable_pwrsrc = false;
 	int disable_charging = 0;
+	struct charger_manager *pinfo = arg;
 	rc = power_supply_get_property(pinfo->bms_psy,
 			POWER_SUPPLY_PROP_CAPACITY, &pval);
 	if (rc < 0) {
 		pr_err("ffc Couldn't get bms capacity:%d\n", rc);
 		goto out;
 	}
-	struct charger_manager *pinfo = dev->driver_data;
+	
 	disable_charging = is_charging_disabled(pinfo, pval.intval);
 	if (disable_charging && pval.intval > pinfo->charge_stop_level)
 		disable_pwrsrc = true;
@@ -3035,7 +3036,7 @@ static int charger_routine_thread(void *arg)
 		if (info->charger_thread_polling == true)
 			mtk_charger_start_timer(info);
 #ifdef CONFIG_LIMIT_CHARGER
-		chg_work()
+		chg_work(arg);
 #endif
 		charger_update_data(info);
 		check_battery_exist(info);
