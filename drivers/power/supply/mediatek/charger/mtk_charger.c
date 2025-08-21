@@ -2974,7 +2974,7 @@ static void chg_work()
 	}
 	struct charger_manager *pinfo = dev->driver_data;
 	disable_charging = is_charging_disabled(pinfo, pval.intval);
-	if (disable_charging && soc > pinfo->charge_stop_level)
+	if (disable_charging && pval.intval > pinfo->charge_stop_level)
 		disable_pwrsrc = true;
 	else
 		disable_pwrsrc = false;
