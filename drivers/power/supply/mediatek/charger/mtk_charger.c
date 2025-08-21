@@ -2966,6 +2966,7 @@ static void chg_work(void *arg)
 {
 	bool disable_pwrsrc = false;
 	int disable_charging = 0;
+	int rc;
 	union power_supply_propval pval = {0,};
 	struct charger_manager *pinfo = arg;
 	rc = power_supply_get_property(pinfo->bms_psy,
@@ -2987,7 +2988,8 @@ static void chg_work(void *arg)
 	//		     disable_charging);
 	//}
 	pinfo->disable_charger = disable_pwrsrc;
-	out:
+out:
+;
 }
 #endif
 static int charger_routine_thread(void *arg)
@@ -5427,6 +5429,7 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		power_supply_changed(pinfo->battery_psy);
 	return size;
 }
+//
 static DEVICE_ATTR(charge_start_level, 0644, show_charge_start_level, store_charge_start_level);
 static DEVICE_ATTR(charge_stop_level, 0644, show_charge_stop_level, store_charge_stop_level);
 #endif
