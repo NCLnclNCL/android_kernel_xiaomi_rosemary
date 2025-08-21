@@ -2939,7 +2939,7 @@ static int s_pingpong = 1;
 		chr_err("pinfo==NULL\n");
 		return disable_charging;
 	}
-pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
+pr_info("%s: info -- lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity);
 				
 	if ((upperbd == DEFAULT_CHARGE_STOP_LEVEL) &&
@@ -2951,10 +2951,10 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 	    (lowerbd >= DEFAULT_CHARGE_START_LEVEL)) {
 	   
 		if (s_pingpong == 1 && upperbd <= capacity) {
-			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, s_pingpong=1->0, charging off\n",
-				__func__, lowerbd, upperbd, capacity);
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, s_pingpong=%d\n",
+				__func__, lowerbd, upperbd, capacity,s_pingpong );
 			disable_charging = 1;
-		if(pinfo->cmd_discharging == false)
+		if((pinfo->cmd_discharging == false)||s_pingpong==1)
 		{
 			pinfo->cmd_discharging = true;
 			charger_dev_enable(pinfo->chg1_dev, false);
@@ -2979,7 +2979,7 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 		__func__, lowerbd, upperbd, capacity);
 			
 		
-		if(pinfo->cmd_discharging == true)
+		if((pinfo->cmd_discharging == true)||s_pingpong==0)
 		{
 			pinfo->cmd_discharging = false;
 			charger_dev_enable(pinfo->chg1_dev, true);
@@ -2988,8 +2988,8 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 		}
 		s_pingpong = 1;
 		} else {
-			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
-				__func__, lowerbd, upperbd, capacity);
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, s_pingpong=%d charging on\n",
+				__func__, lowerbd, upperbd, capacity,s_pingpong );
 		if(pinfo->cmd_discharging == true)
 		{
 			pinfo->cmd_discharging = false;
@@ -3033,7 +3033,7 @@ static void chg_work(void *arg)
 	//	power_supply_set_property(chg_psy, POWER_SUPPLY_PROP_CHARGE_DISABLE,
 	//		     disable_charging);
 	//}
-	pinfo->disable_charger = disable_pwrsrc;
+//pinfo->disable_charger = disable_pwrsrc;
 	}
 	out:
 ;
