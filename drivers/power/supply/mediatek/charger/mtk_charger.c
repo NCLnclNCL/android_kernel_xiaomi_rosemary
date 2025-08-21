@@ -2930,6 +2930,7 @@ static void mtk_charger_init_timer(struct charger_manager *info)
 //start
 static int is_charging_disabled( int capacity)
 {
+static int s_pingpong = 1;
 	int disable_charging = 0;
 	int upperbd = pinfo->charge_stop_level;
 	int lowerbd = pinfo->charge_start_level;
@@ -2948,8 +2949,9 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 	if ((upperbd > lowerbd) &&
 	    (upperbd <= DEFAULT_CHARGE_STOP_LEVEL) &&
 	    (lowerbd >= DEFAULT_CHARGE_START_LEVEL)) {
-		if (pinfo->lowerdb_reached && upperbd <= capacity) {
-			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
+	   
+		if (s_pingpong == 1 && upperbd <= capacity) {
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, s_pingpong=1->0, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
 		if(pinfo->cmd_discharging == false)
@@ -2959,8 +2961,8 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_STOP_CHARGING);
 		}
-		pinfo->lowerdb_reached = false;
-		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
+		s_pingpong = 0;
+		} else if (s_pingpong == 0  && lowerbd < capacity) {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
@@ -2971,11 +2973,12 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_STOP_CHARGING);
 		}
-		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
-			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
+		
+		} else if (s_pingpong == 0 && capacity <= lowerbd) {
+			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, s_pingpong=0->1, charging on\n",
 		__func__, lowerbd, upperbd, capacity);
 			
-		pinfo->lowerdb_reached = true;
+		
 		if(pinfo->cmd_discharging == true)
 		{
 			pinfo->cmd_discharging = false;
@@ -2983,6 +2986,7 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_START_CHARGING);
 		}
+		s_pingpong = 1;
 		} else {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
 				__func__, lowerbd, upperbd, capacity);
@@ -2993,6 +2997,7 @@ pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 			charger_manager_notifier(pinfo,
 						CHARGER_NOTIFY_START_CHARGING);
 		}
+
 		}
 	}
 
@@ -5332,7 +5337,7 @@ static int mtk_charger_probe(struct platform_device *pdev)
 #ifdef CONFIG_LIMIT_CHARGER
 	info->charge_stop_level = DEFAULT_CHARGE_STOP_LEVEL;
 	info->charge_start_level = DEFAULT_CHARGE_START_LEVEL;
-	info->lowerdb_reached = true;
+	
 #endif
 	info->chg1_data.thermal_charging_current_limit = -1;
 	info->chg1_data.thermal_input_current_limit = -1;

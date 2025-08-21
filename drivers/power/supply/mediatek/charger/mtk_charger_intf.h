@@ -625,7 +625,6 @@ struct charger_manager {
 #ifdef CONFIG_LIMIT_CHARGER
 	int charge_stop_level;		/* retail, userspace bd config */
 	int charge_start_level;		/* retail, userspace bd config */
-	bool lowerdb_reached;
 #endif
 	/* plug in time*/
 	struct timespec plugintime;
