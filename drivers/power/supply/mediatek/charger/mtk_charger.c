@@ -2954,10 +2954,10 @@ static int is_charging_disabled( int capacity)
 			disable_charging = 1;
 		if(pinfo->cmd_discharging == false)
 		{
-			pinfo->cmd_discharging = false;
-			charger_dev_enable(pinfo->chg1_dev, true);
+			pinfo->cmd_discharging = true;
+			charger_dev_enable(pinfo->chg1_dev, false);
 			charger_manager_notifier(pinfo,
-						CHARGER_NOTIFY_START_CHARGING);
+						CHARGER_NOTIFY_STOP_CHARGING);
 		}
 		pinfo->lowerdb_reached = false;
 		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
