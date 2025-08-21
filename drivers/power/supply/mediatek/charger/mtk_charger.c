@@ -2938,7 +2938,7 @@ static int is_charging_disabled( int capacity)
 		chr_err("pinfo==NULL\n");
 		return disable_charging;
 	}
-	pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
+pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity);
 				
 	if ((upperbd == DEFAULT_CHARGE_STOP_LEVEL) &&
@@ -4672,7 +4672,8 @@ static ssize_t store_charge_start_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_start_level = reg;
-	pr_info("[Battery] store code:  %d\n", pinfo->charge_start_level);
+	pr_info("[Battery] store code regs : %d\n", reg)
+	pr_info("[Battery] store code store_charge_start_level:  %d\n", pinfo->charge_start_level);
 //mtk_chgstat_notify(pinfo);
 	}
 	if (pinfo->battery_psy)
@@ -4709,8 +4710,8 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 10, &reg);
 	pinfo->charge_stop_level = reg;
-	pr_info("[Battery] store code:  %d\n", pinfo->charge_stop_level);
-//tk_chgstat_notify(pinfo);
+	pr_info("[Battery] store code reg : %d\n", reg)
+	pr_info("[Battery] store code store_charge_stop_level : %d\n", pinfo->charge_stop_level);
 	}
 	if (pinfo->battery_psy)
 		power_supply_changed(pinfo->battery_psy);
