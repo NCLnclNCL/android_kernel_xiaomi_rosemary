@@ -78,7 +78,6 @@
 #include "mtk_switch_charging.h"
 #include "mtk_dual_switch_charging.h"
 #include <linux/power/mtk_charger_intf_mi.h>
-
 /* PD */
 #include <tcpm.h>
 
@@ -92,7 +91,6 @@ struct charger_manager *p_info = NULL;
 //static int thermal_mitigation_qc3[THERMAL_MAX] = {2000000, 2000000, 2000000, 1700000, 1700000, 1500000, 1400000, 1300000, 1300000, 1100000, 1100000, 1100000, 1100000, 700000, 600000, 500000};
 
 static int default_rate_seq[2] = {0, 30};
-
 #if CONFIG_TOUCHSCREEN_COMMON
 
 typedef struct touchscreen_usb_piugin_data {
@@ -2928,7 +2926,68 @@ static void mtk_charger_init_timer(struct charger_manager *info)
 		chr_err("%s: register pm failed\n", __func__);
 #endif /* CONFIG_PM */
 }
+#ifdef CONFIG_LIMIT_CHARGER
+//start
+static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
+{
+	int disable_charging = 0;
+	int upperbd = pinfo->charge_stop_level;
+	int lowerbd = pinfo->charge_start_level;
 
+	if ((upperbd == DEFAULT_CHARGE_STOP_LEVEL) &&
+	    (lowerbd == DEFAULT_CHARGE_START_LEVEL))
+		return 0;
+
+	if ((upperbd > lowerbd) &&
+	    (upperbd <= DEFAULT_CHARGE_STOP_LEVEL) &&
+	    (lowerbd >= DEFAULT_CHARGE_START_LEVEL)) {
+		if (chg_drv->lowerdb_reached && upperbd <= capacity) {
+			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
+				__func__, lowerbd, upperbd, capacity);
+			disable_charging = 1;
+			chg_drv->lowerdb_reached = false;
+		} else if (!chg_drv->lowerdb_reached && lowerbd < capacity) {
+			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
+				__func__, lowerbd, upperbd, capacity);
+			disable_charging = 1;
+		} else if (!chg_drv->lowerdb_reached && capacity <= lowerbd) {
+			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
+				__func__, lowerbd, upperbd, capacity);
+			chg_drv->lowerdb_reached = true;
+		} else {
+			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
+				__func__, lowerbd, upperbd, capacity);
+		}
+	}
+
+	return disable_charging;
+}
+static void chg_work()
+{
+	bool disable_pwrsrc = false;
+	int disable_charging = 0;
+	rc = power_supply_get_property(pinfo->bms_psy,
+			POWER_SUPPLY_PROP_CAPACITY, &pval);
+	if (rc < 0) {
+		pr_err("ffc Couldn't get bms capacity:%d\n", rc);
+		goto out;
+	}
+	struct charger_manager *pinfo = dev->driver_data;
+	disable_charging = is_charging_disabled(pinfo, pval.intval);
+	if (disable_charging && soc > pinfo->charge_stop_level)
+		disable_pwrsrc = true;
+	else
+		disable_pwrsrc = false;
+
+	//if (disable_charging != chg_drv->disable_charging) {
+	//	pr_info("set disable_charging(%d)", disable_charging);
+	//	power_supply_set_property(chg_psy, POWER_SUPPLY_PROP_CHARGE_DISABLE,
+	//		     disable_charging);
+	//}
+	pinfo->disable_charger = disable_pwrsrc;
+	out:
+}
+#endif
 static int charger_routine_thread(void *arg)
 {
 	struct charger_manager *info = arg;
@@ -2975,7 +3034,9 @@ static int charger_routine_thread(void *arg)
 
 		if (info->charger_thread_polling == true)
 			mtk_charger_start_timer(info);
-
+#ifdef CONFIG_LIMIT_CHARGER
+		chg_work()
+#endif
 		charger_update_data(info);
 		check_battery_exist(info);
 		check_dynamic_mivr(info);
@@ -4546,7 +4607,14 @@ static int mtk_charger_setup_files(struct platform_device *pdev)
 	struct proc_dir_entry *battery_dir = NULL;
 	struct charger_manager *info = platform_get_drvdata(pdev);
 	/* struct charger_device *chg_dev; */
-
+#ifdef CONFIG_LIMIT_CHARGER
+	ret = device_create_file(&(pdev->dev), &dev_attr_charge_start_level);
+	if (ret)
+		goto _out;
+	ret = device_create_file(&(pdev->dev), &dev_attr_charge_stop_level);
+	if (ret)
+		goto _out;
+#endif
 	ret = device_create_file(&(pdev->dev), &dev_attr_sw_jeita);
 	if (ret)
 		goto _out;
@@ -5138,7 +5206,10 @@ static int mtk_charger_probe(struct platform_device *pdev)
 	info->enable_dynamic_cv = true;
 	info->set_temp_enable = 0;
 	info->set_temp_num = 250;
-
+#ifdef CONFIG_LIMIT_CHARGER
+	info->charge_stop_level = DEFAULT_CHARGE_STOP_LEVEL;
+	info->charge_start_level = DEFAULT_CHARGE_START_LEVEL;
+#endif
 	info->chg1_data.thermal_charging_current_limit = -1;
 	info->chg1_data.thermal_input_current_limit = -1;
 	info->chg1_data.input_current_limit_by_aicl = -1;
@@ -5253,7 +5324,6 @@ static int mtk_charger_probe(struct platform_device *pdev)
 				mtk_charger_type_recheck_work);
 	INIT_DELAYED_WORK(&info->dcp_confirm_work,
 				mtk_charger_dcp_confirm_work);
-
 	info->init_done = true;
 	_wake_up_charger(info);
 
@@ -5286,7 +5356,77 @@ static void mtk_charger_shutdown(struct platform_device *dev)
 	cancel_delayed_work_sync(&info->dcp_confirm_work);
 	cancel_work_sync(&info->batt_verify_update_work);
 }
+#ifdef CONFIG_LIMIT_CHARGER
+static ssize_t show_charge_start_level(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct charger_manager *pinfo = dev->driver_data;
 
+	pr_debug("[Battery] show_charge_start_level: 0x%x\n", pinfo->charge_start_level);
+
+	return sprintf(buf, "%u\n", pinfo->charge_start_level);
+}
+
+static ssize_t store_charge_start_level(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+	unsigned int reg = 0;
+	int ret;
+
+	pr_debug("[Battery] store_charge_start_level\n");
+	if (buf != NULL && size != 0) {
+		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
+		ret = kstrtouint(buf, 16, &reg);
+	if ((val == pinfo->charge_start_level) ||
+	    (val >= pinfo->charge_stop_level) ||
+	    (val < DEFAULT_CHARGE_START_LEVEL))
+			return count;
+	pinfo->charge_start_level = reg;
+	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
+	mtk_chgstat_notify(pinfo);
+	}
+	if (pinfo->battery_psy)
+		power_supply_changed(pinfo->battery_psy);
+	return size;
+}
+//stop
+static ssize_t show_charge_stop_level(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+
+	pr_debug("[Battery] show_charge_stop_level: 0x%x\n", pinfo->charge_stop_level);
+
+	return sprintf(buf, "%u\n", pinfo->charge_stop_level);
+}
+
+static ssize_t store_charge_stop_level(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct charger_manager *pinfo = dev->driver_data;
+	unsigned int reg = 0;
+	int ret;
+
+	pr_debug("[Battery] store_charge_stop_level\n");
+	if (buf != NULL && size != 0) {
+		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
+		ret = kstrtouint(buf, 16, &reg);
+	if ((val == pinfo->charge_stop_level) ||
+	    (val <= pinfo->charge_start_level) ||
+	    (val > DEFAULT_CHARGE_STOP_LEVEL))
+		return count;
+	pinfo->charge_stop_level = reg;
+	pr_debug("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
+	mtk_chgstat_notify(pinfo);
+	}
+	if (pinfo->battery_psy)
+		power_supply_changed(pinfo->battery_psy);
+	return size;
+}
+static DEVICE_ATTR(BatteryNotify, 0644, show_charge_start_level, store_charge_start_level);
+static DEVICE_ATTR(BatteryNotify, 0644, show_charge_stop_level, store_charge_stop_level);
+#endif
 static const struct of_device_id mtk_charger_of_match[] = {
 	{.compatible = "mediatek,charger",},
 	{},
