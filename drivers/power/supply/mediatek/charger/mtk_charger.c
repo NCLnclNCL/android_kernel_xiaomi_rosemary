@@ -2941,19 +2941,19 @@ static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
 	if ((upperbd > lowerbd) &&
 	    (upperbd <= DEFAULT_CHARGE_STOP_LEVEL) &&
 	    (lowerbd >= DEFAULT_CHARGE_START_LEVEL)) {
-		if (chg_drv->lowerdb_reached && upperbd <= capacity) {
+		if (pinfo->lowerdb_reached && upperbd <= capacity) {
 			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-			chg_drv->lowerdb_reached = false;
-		} else if (!chg_drv->lowerdb_reached && lowerbd < capacity) {
+		pinfo->lowerdb_reached = false;
+		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
 			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-		} else if (!chg_drv->lowerdb_reached && capacity <= lowerbd) {
+		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
 			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
-				__func__, lowerbd, upperbd, capacity);
-			chg_drv->lowerdb_reached = true;
+		__func__, lowerbd, upperbd, capacity);
+		pinfo->lowerdb_reached = true;
 		} else {
 			pr_debug("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
 				__func__, lowerbd, upperbd, capacity);
@@ -5209,6 +5209,7 @@ static int mtk_charger_probe(struct platform_device *pdev)
 #ifdef CONFIG_LIMIT_CHARGER
 	info->charge_stop_level = DEFAULT_CHARGE_STOP_LEVEL;
 	info->charge_start_level = DEFAULT_CHARGE_START_LEVEL;
+	info->lowerdb_reached = true;
 #endif
 	info->chg1_data.thermal_charging_current_limit = -1;
 	info->chg1_data.thermal_input_current_limit = -1;
