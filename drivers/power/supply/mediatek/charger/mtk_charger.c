@@ -5424,8 +5424,8 @@ static ssize_t store_charge_stop_level(struct device *dev,
 		power_supply_changed(pinfo->battery_psy);
 	return size;
 }
-static DEVICE_ATTR(BatteryNotify, 0644, show_charge_start_level, store_charge_start_level);
-static DEVICE_ATTR(BatteryNotify, 0644, show_charge_stop_level, store_charge_stop_level);
+static DEVICE_ATTR(charge_start_level, 0644, show_charge_start_level, store_charge_start_level);
+static DEVICE_ATTR(charge_stop_level, 0644, show_charge_stop_level, store_charge_stop_level);
 #endif
 static const struct of_device_id mtk_charger_of_match[] = {
 	{.compatible = "mediatek,charger",},
