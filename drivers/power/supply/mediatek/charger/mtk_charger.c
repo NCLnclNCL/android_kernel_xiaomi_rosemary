@@ -2990,7 +2990,7 @@ mtk_chaging_enable_write(1);
 
 	return disable_charging;
 }
-static void chg_work(void *arg)
+static void chg_work()
 {
 	bool disable_pwrsrc = false;
 	int disable_charging = 0;
@@ -3073,7 +3073,7 @@ static int charger_routine_thread(void *arg)
 		if (info->charger_thread_polling == true)
 			mtk_charger_start_timer(info);
 #ifdef CONFIG_LIMIT_CHARGER
-		chg_work(arg);
+		chg_work();
 #endif
 		charger_update_data(info);
 		check_battery_exist(info);

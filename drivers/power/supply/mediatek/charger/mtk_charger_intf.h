@@ -586,9 +586,6 @@ struct charger_manager {
 	struct delayed_work	charger_type_recheck_work;
 	struct delayed_work dcp_confirm_work;
 	struct work_struct	batt_verify_update_work;
-#ifdef CONFIG_LIMIT_CHARGER
-	struct delayed_work chg_work;
-#endif
 	/* vote */
 	int effective_fcc;
 
