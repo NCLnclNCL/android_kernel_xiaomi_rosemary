@@ -2946,23 +2946,36 @@ static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=1->0, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-			mtk_chaging_enable_write(0);
+		if(pinfo->cmd_discharging == true)
+		{
+				mtk_chaging_enable_write(0);
+		}
+
 		pinfo->lowerdb_reached = false;
 		} else if (!pinfo->lowerdb_reached && lowerbd < capacity) {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging off\n",
 				__func__, lowerbd, upperbd, capacity);
 			disable_charging = 1;
-			mtk_chaging_enable_write(0);
+		if(pinfo->cmd_discharging == true)
+		{
+				mtk_chaging_enable_write(0);
+		}
 		} else if (!pinfo->lowerdb_reached && capacity <= lowerbd) {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, lowerdb_reached=0->1, charging on\n",
 		__func__, lowerbd, upperbd, capacity);
-			mtk_chaging_enable_write(1);
+			
 		pinfo->lowerdb_reached = true;
-		mtk_chaging_enable_write(1);
+		if(pinfo->cmd_discharging == false)
+		{
+	mtk_chaging_enable_write(1);
+		}
 		} else {
 			pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d, charging on\n",
 				__func__, lowerbd, upperbd, capacity);
-			mtk_chaging_enable_write(1);
+		if(pinfo->cmd_discharging == false)
+		{
+		mtk_chaging_enable_write(1);
+		}
 		}
 	}
 
@@ -4631,10 +4644,6 @@ static ssize_t store_charge_start_level(struct device *dev,
 	if (buf != NULL && size != 0) {
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 16, &reg);
-	if ((reg == pinfo->charge_start_level) ||
-	    (reg >= pinfo->charge_stop_level) ||
-	    (reg < DEFAULT_CHARGE_START_LEVEL))
-			return size;
 	pinfo->charge_start_level = reg;
 	pr_info("[Battery] store code: 0x%x\n", pinfo->charge_start_level);
 //mtk_chgstat_notify(pinfo);
@@ -4668,10 +4677,6 @@ static ssize_t store_charge_stop_level(struct device *dev,
 	if (buf != NULL && size != 0) {
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
 		ret = kstrtouint(buf, 16, &reg);
-	if ((reg == pinfo->charge_stop_level) ||
-	    (reg <= pinfo->charge_start_level) ||
-	    (reg > DEFAULT_CHARGE_STOP_LEVEL))
-		return size;
 	pinfo->charge_stop_level = reg;
 	pr_info("[Battery] store code: 0x%x\n", pinfo->charge_stop_level);
 //tk_chgstat_notify(pinfo);
