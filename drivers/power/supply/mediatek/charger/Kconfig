@@ -6,7 +6,7 @@ config MTK_CHARGER
 	  This driver contains charging control flow and
 	  maintains charging status.
 	  Say no if not using MediaTek charging driver.
-config CONFIG_LIMIT_CHARGER
+config LIMIT_CHARGER
 	bool "LIMIT BATTERY CHARGER"
 	help
 	  enable stop charge level.
