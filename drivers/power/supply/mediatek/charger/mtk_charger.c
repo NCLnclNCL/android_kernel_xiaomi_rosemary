@@ -4660,7 +4660,7 @@ static ssize_t store_charge_start_level(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
 //struct charger_manager *pinfo = dev->driver_data;
-	unsigned int reg = 0;
+ int reg = 0;
 	int ret;
 	if (pinfo == NULL)
 	{
