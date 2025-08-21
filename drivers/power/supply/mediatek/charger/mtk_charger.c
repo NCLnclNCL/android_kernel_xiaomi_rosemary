@@ -2928,13 +2928,18 @@ static void mtk_charger_init_timer(struct charger_manager *info)
 }
 #ifdef CONFIG_LIMIT_CHARGER
 //start
-static int is_charging_disabled(struct charger_manager *pinfo, int capacity)
+static int is_charging_disabled( int capacity)
 {
 	int disable_charging = 0;
 	int upperbd = pinfo->charge_stop_level;
 	int lowerbd = pinfo->charge_start_level;
+	if (pinfo == NULL)
+	{
+		chr_err("pinfo==NULL\n");
+	}
 	pr_info("%s: lowerbd=%d, upperbd=%d, capacity=%d\n",
 				__func__, lowerbd, upperbd, capacity);
+				
 	if ((upperbd == DEFAULT_CHARGE_STOP_LEVEL) &&
 	    (lowerbd == DEFAULT_CHARGE_START_LEVEL))
 		return 0;
@@ -2987,15 +2992,18 @@ static void chg_work(void *arg)
 	int disable_charging = 0;
 	int rc;
 	union power_supply_propval pval = {0,};
-	struct charger_manager *pinfo = arg;
+//struct charger_manager *pinfo = arg;
 	rc = power_supply_get_property(pinfo->bms_psy,
 			POWER_SUPPLY_PROP_CAPACITY, &pval);
 	if (rc < 0) {
 		pr_err("ffc Couldn't get bms capacity:%d\n", rc);
 		goto out;
 	}
-	
-	disable_charging = is_charging_disabled(pinfo, pval.intval);
+	if (pinfo == NULL)
+	{
+		chr_err("pinfo==NULL\n");
+	}
+	disable_charging = is_charging_disabled( pval.intval);
 	if (disable_charging && pval.intval > pinfo->charge_stop_level)
 		disable_pwrsrc = true;
 	else
@@ -4626,7 +4634,7 @@ PROC_FOPS_RW(en_safety_timer);
 static ssize_t show_charge_start_level(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	struct charger_manager *pinfo = dev->driver_data;
+//struct charger_manager *pinfo = dev->driver_data;
 
 	pr_debug("[Battery] show_charge_start_level: 0x%x\n", pinfo->charge_start_level);
 
@@ -4636,10 +4644,13 @@ static ssize_t show_charge_start_level(struct device *dev,
 static ssize_t store_charge_start_level(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
-	struct charger_manager *pinfo = dev->driver_data;
+//struct charger_manager *pinfo = dev->driver_data;
 	unsigned int reg = 0;
 	int ret;
-
+	if (pinfo == NULL)
+	{
+		chr_err("pinfo==NULL\n");
+	}
 	pr_debug("[Battery] store_charge_start_level\n");
 	if (buf != NULL && size != 0) {
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
@@ -4659,7 +4670,7 @@ static DEVICE_ATTR(charge_start_level, 0644, show_charge_start_level, store_char
 static ssize_t show_charge_stop_level(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	struct charger_manager *pinfo = dev->driver_data;
+//struct charger_manager *pinfo = dev->driver_data;
 
 	pr_debug("[Battery] show_charge_stop_level: 0x%x\n", pinfo->charge_stop_level);
 
@@ -4669,10 +4680,13 @@ static ssize_t show_charge_stop_level(struct device *dev,
 static ssize_t store_charge_stop_level(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
-	struct charger_manager *pinfo = dev->driver_data;
+//struct charger_manager *pinfo = dev->driver_data;
 	unsigned int reg = 0;
 	int ret;
-
+	if (pinfo == NULL)
+	{
+		chr_err("pinfo==NULL\n");
+	}
 	pr_debug("[Battery] store_charge_stop_level\n");
 	if (buf != NULL && size != 0) {
 		pr_debug("[Battery] buf is %s and size is %zu\n", buf, size);
