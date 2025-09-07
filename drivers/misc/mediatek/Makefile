@@ -36,6 +36,8 @@ obj-y += mmdvfs/
 ifneq ($(CONFIG_MTK_SYSTRACKER_DISABLE),y)
 obj-$(CONFIG_MTK_SYSTRACKER_V2)   += systracker/
 endif
+obj-y += udc/
+obj-$(CONFIG_MTK_FPSGO_V3) += fpsgo_cus/
 
 obj-$(CONFIG_MTK_IRRX) += irrx/
 
@@ -192,5 +194,4 @@ obj-$(CONFIG_MTK_OTP) += otp/
 obj-$(CONFIG_MTK_SDA) += sda/
 obj-$(CONFIG_MTK_ULTRASND_PROXIMITY) += elliptic/
 
-obj-y += /udc
-obj-$(CONFIG_MTK_FPSGO_V3) += /fpsgo_cus
+

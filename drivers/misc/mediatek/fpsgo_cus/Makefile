@@ -36,7 +36,7 @@
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
 
-ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),m))
+ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),y))
 ccflags-y += -DCONFIG_MTK_FPSGO_V3
 subdir-ccflags-y += -DCONFIG_MTK_FPSGO_V3
 endif
