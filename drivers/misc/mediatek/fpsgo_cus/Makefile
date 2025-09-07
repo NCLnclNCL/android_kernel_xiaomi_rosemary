@@ -1,4 +1,4 @@
-# Copyright Statement:
+.# Copyright Statement:
 #
 # This software/firmware and related documentation ("MediaTek Software") are
 # protected under relevant copyright laws. The information contained herein
@@ -50,6 +50,9 @@ obj-y += fpsgo.o
 fpsgo-y += src/fpsgo_main.o
 $(obj)/src/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/src/xgf_v3_ko_arm64.o
 	$(Q)cp $< $@
+
+CFLAGS_REMOVE_src/xgf_v3_ko_arm64.o += $(CC_FLAGS_LTO)
+
 ifeq (y,$(CONFIG_MTK_FPSGO_V3))
 	ifeq (y,$(CONFIG_THUMB2_KERNEL))
 		fpsgo-y += src/xgf_v3_ko_thumb2.o
