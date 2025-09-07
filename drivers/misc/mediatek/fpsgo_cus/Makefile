@@ -32,7 +32,7 @@
 # have been modified by MediaTek Inc. All revisions are subject to any receiver\'s
 # applicable license agreements with MediaTek Inc.
 #
-
+BASE_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/base
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
 
@@ -45,7 +45,7 @@ ccflags-y += \
 	     -I$(srctree)/include/ \
 	     -I$(MTK_TOP)/include/ \
 	     -I$(FBT_TOP)/include/ \
-
+         -I$(BASE_TOP)/include/ \
 obj-y += fpsgo.o
 fpsgo-y += src/fpsgo_main.o
 $(obj)/src/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/src/xgf_v3_ko_arm64.o
