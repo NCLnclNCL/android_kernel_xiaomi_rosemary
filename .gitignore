@@ -27,7 +27,7 @@
 *.lzma
 *.lzo
 *.mod.c
-*.o
+#*.o
 *.o.*
 *.order
 *.patch
