@@ -33,25 +33,7 @@
  * applicable license agreements with MediaTek Inc.
  */
 
-#include <linux/cdev.h>
-#include <linux/delay.h>
-#include <linux/device.h>
-#include <linux/fs.h>
-#include <linux/hardirq.h>
-#include <linux/init.h>
-#include <linux/kallsyms.h>
-#include <linux/miscdevice.h>
 #include <linux/module.h>
-#include <linux/poll.h>
-#include <linux/proc_fs.h>
-#include <linux/wait.h>
-#include <linux/sched.h>
-#include <linux/vmalloc.h>
-#include <linux/slab.h>
-#include <linux/spinlock.h>
-#include <linux/semaphore.h>
-#include <linux/workqueue.h>
-#include <linux/kthread.h>
 
 #if defined (CONFIG_MTK_FPSGO) || defined (CONFIG_MTK_FPSGO_V3)
 #include "xgf.h"
@@ -78,17 +60,14 @@ static int __init fpsgo_init(void)
 	if (ret)
 		return -1;
 
-	//xgf_est_runtime_fp = xgf_est_runtime;
-	//xgf_stat_xchg_fp   = xgf_stat_xchg;
 	xgf_est_runtime_fp = xgf_est_runtime;
-	fpsgo_xgf2ko_calculate_target_fps_fp = fpsgo_xgf2ko_calculate_target_fps;
-	fpsgo_xgf2ko_do_recycle_fp = fpsgo_xgf2ko_do_recycle;
-
 	xgff_est_runtime_fp = xgff_est_runtime;
 	xgff_update_start_prev_index_fp = xgff_update_start_prev_index;
-
+	fpsgo_xgf2ko_calculate_target_fps_fp = fpsgo_xgf2ko_calculate_target_fps;
+	fpsgo_xgf2ko_do_recycle_fp = fpsgo_xgf2ko_do_recycle;
 	xgf_ema2_predict_fp = xgf_ema2_predict;
 	xgf_ema2_init_fp = xgf_ema2_init;
+
 	notify_xgf_ko_ready();
 
 	pr_debug("%s %d: finish", __func__, __LINE__);
