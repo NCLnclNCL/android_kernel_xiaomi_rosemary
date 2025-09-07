@@ -58,7 +58,7 @@
 #endif
 #include "fpsgo_ko.h"
 
-//#line __LINE__ "vendor/mediatek/kernel_modules/fpsgo_cus/src/fpsgo_main.c"
+#line __LINE__ "vendor/mediatek/kernel_modules/fpsgo_cus/src/fpsgo_main.c"
 
 static void __exit fpsgo_exit(void) {}
 
@@ -78,9 +78,17 @@ static int __init fpsgo_init(void)
 	if (ret)
 		return -1;
 
+	//xgf_est_runtime_fp = xgf_est_runtime;
+	//xgf_stat_xchg_fp   = xgf_stat_xchg;
 	xgf_est_runtime_fp = xgf_est_runtime;
-	xgf_stat_xchg_fp   = xgf_stat_xchg;
+	fpsgo_xgf2ko_calculate_target_fps_fp = fpsgo_xgf2ko_calculate_target_fps;
+	fpsgo_xgf2ko_do_recycle_fp = fpsgo_xgf2ko_do_recycle;
 
+	xgff_est_runtime_fp = xgff_est_runtime;
+	xgff_update_start_prev_index_fp = xgff_update_start_prev_index;
+
+	xgf_ema2_predict_fp = xgf_ema2_predict;
+	xgf_ema2_init_fp = xgf_ema2_init;
 	notify_xgf_ko_ready();
 
 	pr_debug("%s %d: finish", __func__, __LINE__);
