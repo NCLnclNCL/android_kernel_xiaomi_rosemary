@@ -366,12 +366,12 @@ static int perf_thread_set_perf_events(int cpu)
 			 */
 			if (ev->hw.idx != 0) {
 				// MET_TRACE("[MET_PMU] cpu %d registered in pmu slot: [%d] evt=%#04x\n",
-					  cpu, ev->hw.idx-1, pmu[i].event);
+		//			  cpu, ev->hw.idx-1, pmu[i].event);
 				pr_debug("[MET_PMU] cpu %d registered in pmu slot: [%d] evt=%#04x\n",
 					 cpu, ev->hw.idx-1, pmu[i].event);
 			} else if (ev->hw.idx == 0) {
 				// MET_TRACE("[MET_PMU] cpu %d registered cycle count evt=%#04x\n",
-					  cpu, pmu[i].event);
+				//	  cpu, pmu[i].event);
 				pr_debug("[MET_PMU] cpu %d registered cycle count evt=%#04x\n",
 					 cpu, pmu[i].event);
 			}
@@ -849,7 +849,7 @@ static int cpupmu_process_argument(const char *arg, int len)
 
 				if (!cpu_pmu->perf_event_get_evttype) {
 					// MET_TRACE("[MET_PMU] cpu_pmu->perf_event_get_evttype=NULL, "
-						  "met pmu on perf-event was not supported on this platform\n");
+		//				  "met pmu on perf-event was not supported on this platform\n");
 					pr_debug("[MET_PMU] cpu_pmu->perf_event_get_evttype=NULL, "
 						 "met pmu on perf-event was not supported on this platform\n");
 					goto arg_out;
@@ -1079,7 +1079,7 @@ static int __validate_sspm_compatibility(void) {
 
 		if (!__is_perf_event_hw_slot_seq_order(cpu)) {
 			// MET_TRACE("[MET_PMU] pmu not sequentially allocated on cpu %d\n"
-				  ,cpu);
+		//		  ,cpu);
 			pr_debug("[MET_PMU] pmu not sequentially allocated on cpu %d\n"
 				 ,cpu);
 			return -1;
@@ -1139,7 +1139,7 @@ static int sspm_pmu_process_argument(const char *arg, int len)
 
 		if (!cpu_pmu->pmu_read_clear_overflow_flag) {
 			// MET_TRACE("[MET_PMU] cpu_pmu->pmu_read_clear_overflow_flag=NULL, "
-				  "pmu on sspm was not supported on this platform\n");
+			//	  "pmu on sspm was not supported on this platform\n");
 			pr_debug("[MET_PMU] cpu_pmu->pmu_read_clear_overflow_flag=NULL, "
 				 "pmu on sspm was not supported on this platform\n");
 			return -EINVAL;
