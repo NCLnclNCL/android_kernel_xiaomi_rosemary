@@ -12,8 +12,7 @@
  */
 
 
-//#ifndef MET_DRV
-#define MET_DRV
+
 
 #include <linux/version.h>
 #include <linux/preempt.h>
@@ -21,7 +20,38 @@
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/clk.h>
+#ifdef CONFIG_TRACING
+#define TRACE_PUTS(p) \
+	do { \
+		trace_puts(p);; \
+	} while (0)
+#else
+#define TRACE_PUTS(p) do {} while (0)
+#endif
+#define MET_TRACE(FORMAT, args...) \
+	do { \
+		int _met_trace_str; \
+		char *pmet_strbuf; \
+		preempt_disable(); \
+		if (in_nmi()) \
+			pmet_strbuf = per_cpu(met_strbuf_nmi, smp_processor_id()); \
+		else if (in_irq()) \
+			pmet_strbuf = per_cpu(met_strbuf_irq, smp_processor_id()); \
+		else if (in_softirq()) \
+			pmet_strbuf = per_cpu(met_strbuf_sirq, smp_processor_id()); \
+		else \
+			pmet_strbuf = per_cpu(met_strbuf, smp_processor_id()); \
+		if (met_mode & MET_MODE_TRACE_CMD) \
+			_met_trace_str = snprintf(pmet_strbuf, MET_STRBUF_SIZE, "%s: " FORMAT, __func__, ##args); \
+		else \
+			_met_trace_str = snprintf(pmet_strbuf, MET_STRBUF_SIZE, FORMAT, ##args); \
+		if (_met_trace_str > 0) \
+			TRACE_PUTS(pmet_strbuf); \
+		my_preempt_enable(); \
+	} while (0)
 
+#ifndef MET_DRV
+#define MET_DRV
 extern int met_mode;
 extern int core_plf_init(void);
 extern void core_plf_exit(void);
@@ -125,6 +155,21 @@ DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf);
 		trace_##TRACE_NAME(args);;			\
 	} while (0)
 
+#define MET_TRACE_GETBUF(pSOB, pEOB) \
+	({ \
+		preempt_disable(); \
+		if (in_nmi()) \
+			*pSOB = per_cpu(met_strbuf_nmi, smp_processor_id()); \
+		else if (in_irq()) \
+			*pSOB = per_cpu(met_strbuf_irq, smp_processor_id()); \
+		else if (in_softirq()) \
+			*pSOB = per_cpu(met_strbuf_sirq, smp_processor_id()); \
+		else \
+			*pSOB = per_cpu(met_strbuf, smp_processor_id()); \
+		*pEOB = *pSOB; \
+		if (met_mode & MET_MODE_TRACE_CMD) \
+			*pEOB += snprintf(*pEOB, MET_STRBUF_SIZE, "%s: ", __func__); \
+	})
 
 #define MET_TYPE_PMU	1
 #define MET_TYPE_BUS	2
@@ -278,4 +323,4 @@ extern int met_reg_clk_tree_real(void *fp);
 extern int enable_met_backlight_tag_real(void);
 extern int output_met_backlight_tag_real(int level);
 
-//#endif	/* MET_DRV */
+#endif	/* MET_DRV */
