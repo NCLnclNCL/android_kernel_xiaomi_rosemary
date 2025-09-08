@@ -16,11 +16,11 @@ ifeq ($(CONFIG_FTRACE),y)
         FTRACE_READY := y
     endif
 endif
-
-ifeq ($(CONFIG_MTK_MET_PLF),m)
-    MET_BUILD_KO := y
-endif
-
+export CONFIG_MTK_MET_PLF=y
+#ifeq ($(CONFIG_MTK_MET_PLF),m)
+#    MET_BUILD_KO := y
+#endif
+MET_PLF_DIR := y
 $(info ******** Start to build met_drv for $(MTK_PLATFORM) ********)
 ifneq ($(MET_PLF_DIR),)
     ifeq ($(FTRACE_READY),y)
