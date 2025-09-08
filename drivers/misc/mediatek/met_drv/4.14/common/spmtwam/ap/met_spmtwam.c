@@ -334,25 +334,25 @@ void ms_spmtwam(struct twam_sig *ts)
 	switch (used_count) {
 	case 1:
 		// MET_TRACE(MP_FMT1,
-			(ts->sig0));
+		//	(ts->sig0));
 		break;
 	case 2:
 		// MET_TRACE(MP_FMT2,
-			(ts->sig0),
-			(ts->sig1));
+		//	(ts->sig0),
+		//	(ts->sig1));
 		break;
 	case 3:
 		// MET_TRACE(MP_FMT3,
-			(ts->sig0),
-			(ts->sig1),
-			(ts->sig2));
+		//	(ts->sig0),
+		//	(ts->sig1),
+		//	(ts->sig2));
 		break;
 	case 4:
 		// MET_TRACE(MP_FMT4,
-			(ts->sig0),
-			(ts->sig1),
-			(ts->sig2),
-			(ts->sig3));
+		//	(ts->sig0),
+		//	(ts->sig1),
+		//	(ts->sig2),
+		//	(ts->sig3));
 		break;
 	default:
 		MET_SPMTWAM_ERR("No assign profile event\n");
