@@ -314,7 +314,7 @@ int MET_BM_SetTtypeCounterRW(unsigned int bmrw0_val, unsigned int bmrw1_val)
 		if (value_origin != bmrw0_val) {
 			emi_reg_sync_writel(bmrw0_val, (unsigned long)BaseAddrEMI[emi_no] + EMI_BMRW0);
 			// MET_TRACE("[MET_EMI_settype1] bmrw0_val: %x, value_origin: %x\n", bmrw0_val,
-				   value_origin);
+			//	   value_origin);
 		}
 
 
@@ -323,7 +323,7 @@ int MET_BM_SetTtypeCounterRW(unsigned int bmrw0_val, unsigned int bmrw1_val)
 		if (value_origin != bmrw1_val) {
 			emi_reg_sync_writel(bmrw1_val, (unsigned long)BaseAddrEMI[emi_no] + EMI_BMRW1);
 			// MET_TRACE("[MET_EMI_settype2] bmrw0_val: %x, value_origin: %x\n", bmrw1_val,
-				   value_origin);
+			//	   value_origin);
 
 		}
 	}
