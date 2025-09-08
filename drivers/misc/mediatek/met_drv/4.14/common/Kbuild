@@ -35,6 +35,7 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/base/power/$(MTK_FAMILY_PLATFORM
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/leds/
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/leds/$(MTK_PLATFORM)/
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/leds/$(MTK_FAMILY_PLATFORM)/
+ccflags-y += -I$(srctree)/drivers/misc/mediatek/met_drv/
 
 ccflags-y += $(EXTRA_ARGS) $(EXTRA_CFLAGS)
 ccflags-y += -DMTK_PLATFORM=$(MTK_PLATFORM)
