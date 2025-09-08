@@ -2,7 +2,7 @@ ifeq ($(ARCH), arm)
 ccflags-y += -DCONFIG_MET_ARM_32BIT
 endif	# ifeq ($(ARCH), arm)
 
-#obj-y += met_api.o
+obj-y += met_api.o
 
 ifeq ($(PATCHLEVEL),)
 $(error VERSION is not defined)
@@ -14,7 +14,7 @@ endif
 
 CONFIG_KERVER_VERSION := $(VERSION).$(PATCHLEVEL)
 
-CONFIG_MTK_MET_BUILT_IN := y
+#CONFIG_MTK_MET_BUILT_IN := y
 ifeq ($(CONFIG_MTK_MET_BUILT_IN),y)
 ccflags-y += -DMTK_MET_BUILT_IN
 MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
