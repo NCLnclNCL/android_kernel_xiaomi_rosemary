@@ -12,7 +12,7 @@
  */
 
 
-#ifndef MET_DRV
+//#ifndef MET_DRV
 #define MET_DRV
 
 #include <linux/version.h>
@@ -278,4 +278,4 @@ extern int met_reg_clk_tree_real(void *fp);
 extern int enable_met_backlight_tag_real(void);
 extern int output_met_backlight_tag_real(int level);
 
-#endif	/* MET_DRV */
+//#endif	/* MET_DRV */
