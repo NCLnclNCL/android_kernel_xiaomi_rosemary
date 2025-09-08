@@ -54,7 +54,7 @@ met-y := $(MET_CORE)/met_main.o \
     $(MET_CORE)/switch.o \
     $(MET_CORE)/trace_event.o \
     $(MET_CORE)/core_plf_init.o \
-    $(MET_CORE)/core_plf_trace.o
+    $(MET_CORE)/core_plf_trace.o \
 	$(MET_CORE)/met_api.o
 CFLAGS_interface.o += -DMET_USER_EVENT_SUPPORT
 CFLAGS_met_tag_ex.o += -DMET_USER_EVENT_SUPPORT
