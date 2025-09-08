@@ -7,7 +7,7 @@ ifeq ($(CONFIG_MACH_MT6893),y)
     MTK_PLATFORM := mt6893
 endif
 
-MET_ROOT_DIR := $(src)
+MET_ROOT_DIR := $(srctree)/drivers/misc/mediatek/met_drv/4.14
 MET_COMMON_DIR := $(wildcard $(MET_ROOT_DIR)/common)
 MET_PLF_DIR := $(wildcard $(MET_ROOT_DIR)/$(MTK_PLATFORM))
 MET_BUILD_DEFAULT := n
