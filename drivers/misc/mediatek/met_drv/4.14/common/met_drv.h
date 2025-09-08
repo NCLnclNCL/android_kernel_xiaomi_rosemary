@@ -38,7 +38,7 @@ DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf);
 #else
 #define TRACE_PUTS(p) do {} while (0)
 #endif
-#define // MET_TRACE(FORMAT, args...) \
+#define  MET_TRACE(FORMAT, args...) \
 	do { \
 		int _met_trace_str; \
 		char *pmet_strbuf; \
@@ -112,7 +112,7 @@ DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf);
 		my_preempt_enable(); \
 	} while (0)
 
-#define // MET_TRACE(FORMAT, args...) \
+#define  MET_TRACE(FORMAT, args...) \
 	do { \
 		int _met_trace_str; \
 		char *pmet_strbuf; \
