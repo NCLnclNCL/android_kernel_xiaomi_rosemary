@@ -25,7 +25,11 @@ DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_nmi);
 DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_irq);
 DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_sirq);
 DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf);
-
+#ifdef CONFIG_MET_MODULE
+#define my_preempt_enable() preempt_enable()
+#else
+#define my_preempt_enable() preempt_enable_no_resched()
+#endif
 #ifdef CONFIG_TRACING
 #define TRACE_PUTS(p) \
 	do { \
