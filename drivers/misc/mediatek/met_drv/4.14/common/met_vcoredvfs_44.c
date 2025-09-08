@@ -266,7 +266,7 @@ static void met_vcoredvfs_start(void)
 	if (vcorefs_register_req_notify_symbol)
 		vcorefs_register_req_notify_symbol(sw_kicker_req);
 	else
-		MET_TRACE("vcorefs_register_req_notify not exist!\n");
+		// MET_TRACE("vcorefs_register_req_notify not exist!\n");
 
 	if (!polling_mode && vcorefs_enable_debug_isr_symbol)
 		vcorefs_enable_debug_isr_symbol(true);

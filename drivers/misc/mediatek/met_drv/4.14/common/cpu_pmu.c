@@ -129,18 +129,18 @@ int cpu_pmu_debug_init(void)
 	 if (mcucfg_base == NULL) {
 		node = of_find_compatible_node(NULL, NULL, mcucfg_desc);
 		if (node == NULL) {
-			MET_TRACE("[MET_PMU_DB] of_find node == NULL\n");
+			// MET_TRACE("[MET_PMU_DB] of_find node == NULL\n");
 			pr_debug("[MET_PMU_DB] of_find node == NULL\n");
 			goto out;
 		}
 		mcucfg_base = of_iomap(node, 0);
 		of_node_put(node);
 		if (mcucfg_base == NULL) {
-			MET_TRACE("[MET_PMU_DB] mcucfg_base == NULL\n");
+			// MET_TRACE("[MET_PMU_DB] mcucfg_base == NULL\n");
 			pr_debug("[MET_PMU_DB] mcucfg_base == NULL\n");
 			goto out;
 		}
-		MET_TRACE("[MET_PMU_DB] regbase %08lx\n", DBG_CONTROL_CPU7);
+		// MET_TRACE("[MET_PMU_DB] regbase %08lx\n", DBG_CONTROL_CPU7);
 		pr_debug("[MET_PMU_DB] regbase %08lx\n", DBG_CONTROL_CPU7);
 	}
 
@@ -162,7 +162,7 @@ int cpu_pmu_debug_init(void)
 
 	value6 = readl(IOMEM(DBG_CONTROL_CPU6));
 	value7 = readl(IOMEM(DBG_CONTROL_CPU7));
-	MET_TRACE("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
+	// MET_TRACE("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
 	pr_debug("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
 	return 1;
 
@@ -171,7 +171,7 @@ out:
 		iounmap(mcucfg_base);
 		mcucfg_base = NULL;
 	}
-	MET_TRACE("[MET_PMU_DB]DBG_CONTROL init error");
+	// MET_TRACE("[MET_PMU_DB]DBG_CONTROL init error");
 	pr_debug("[MET_PMU_DB]DBG_CONTROL init error");
 	return 0;
 }
@@ -191,7 +191,7 @@ int cpu_pmu_debug_uninit(void)
 
 	value6 = readl(IOMEM(DBG_CONTROL_CPU6));
 	value7 = readl(IOMEM(DBG_CONTROL_CPU7));
-	MET_TRACE("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
+	// MET_TRACE("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
 	pr_debug("[MET_PMU_DB]DBG_CONTROL_CPU6 = %08x,  DBG_CONTROL_CPU7 = %08x\n", value6, value7);
 
 	if (mcucfg_base != NULL) {
@@ -345,7 +345,7 @@ static int perf_thread_set_perf_events(int cpu)
 				met_cpupmu.mode = 0;
 				met_perf_cpupmu_status = 0;
 
-				MET_TRACE("[MET_PMU] cpu %d failed to register pmu event %4x\n", cpu, pmu[i].event);
+				// MET_TRACE("[MET_PMU] cpu %d failed to register pmu event %4x\n", cpu, pmu[i].event);
 				pr_notice("[MET_PMU] cpu %d failed to register pmu event %4x\n", cpu, pmu[i].event);
 				continue;
 			}
@@ -365,12 +365,12 @@ static int perf_thread_set_perf_events(int cpu)
 			 * |   6 | 5             |
 			 */
 			if (ev->hw.idx != 0) {
-				MET_TRACE("[MET_PMU] cpu %d registered in pmu slot: [%d] evt=%#04x\n",
+				// MET_TRACE("[MET_PMU] cpu %d registered in pmu slot: [%d] evt=%#04x\n",
 					  cpu, ev->hw.idx-1, pmu[i].event);
 				pr_debug("[MET_PMU] cpu %d registered in pmu slot: [%d] evt=%#04x\n",
 					 cpu, ev->hw.idx-1, pmu[i].event);
 			} else if (ev->hw.idx == 0) {
-				MET_TRACE("[MET_PMU] cpu %d registered cycle count evt=%#04x\n",
+				// MET_TRACE("[MET_PMU] cpu %d registered cycle count evt=%#04x\n",
 					  cpu, pmu[i].event);
 				pr_debug("[MET_PMU] cpu %d registered cycle count evt=%#04x\n",
 					 cpu, pmu[i].event);
@@ -558,7 +558,7 @@ static void cpupmu_unique_start(void)
 	if (met_cpu_pm_pmu_reconfig) {
 		if (met_cpu_pmu_method) {
 			met_cpu_pm_pmu_reconfig = 0;
-			MET_TRACE("[MET_PMU] met_cpu_pmu_method=%d, met_cpu_pm_pmu_reconfig forced disabled\n", met_cpu_pmu_method);
+			// MET_TRACE("[MET_PMU] met_cpu_pmu_method=%d, met_cpu_pm_pmu_reconfig forced disabled\n", met_cpu_pmu_method);
 			pr_debug("[MET_PMU] met_cpu_pmu_method=%d, met_cpu_pm_pmu_reconfig forced disabled\n", met_cpu_pmu_method);
 		} else {
 			memset(cpu_pmu->cpu_pm_unpolled_loss, 0, sizeof (cpu_pmu->cpu_pm_unpolled_loss));
@@ -569,11 +569,11 @@ static void cpupmu_unique_start(void)
 #else
 	if (met_cpu_pm_pmu_reconfig) {
 		met_cpu_pm_pmu_reconfig = 0;
-		MET_TRACE("[MET_PMU] CONFIG_CPU_PM=%d, met_cpu_pm_pmu_reconfig forced disabled\n", CONFIG_CPU_PM);
+		// MET_TRACE("[MET_PMU] CONFIG_CPU_PM=%d, met_cpu_pm_pmu_reconfig forced disabled\n", CONFIG_CPU_PM);
 		pr_debug("[MET_PMU] CONFIG_CPU_PM=%d, met_cpu_pm_pmu_reconfig forced disabled\n", CONFIG_CPU_PM);
 	}
 #endif
-	MET_TRACE("[MET_PMU] met_cpu_pm_pmu_reconfig=%u\n", met_cpu_pm_pmu_reconfig);
+	// MET_TRACE("[MET_PMU] met_cpu_pm_pmu_reconfig=%u\n", met_cpu_pm_pmu_reconfig);
 	pr_debug("[MET_PMU] met_cpu_pm_pmu_reconfig=%u\n", met_cpu_pm_pmu_reconfig);
 
 	if (met_cpu_pmu_method) {
@@ -848,7 +848,7 @@ static int cpupmu_process_argument(const char *arg, int len)
 				struct perf_event *ev;
 
 				if (!cpu_pmu->perf_event_get_evttype) {
-					MET_TRACE("[MET_PMU] cpu_pmu->perf_event_get_evttype=NULL, "
+					// MET_TRACE("[MET_PMU] cpu_pmu->perf_event_get_evttype=NULL, "
 						  "met pmu on perf-event was not supported on this platform\n");
 					pr_debug("[MET_PMU] cpu_pmu->perf_event_get_evttype=NULL, "
 						 "met pmu on perf-event was not supported on this platform\n");
@@ -991,10 +991,10 @@ static void ipi_config_pmu_counter_cnt(void) {
 			   (counter_cnt[cpu]-1) : counter_cnt[cpu]);
 		ipi_buf[1] = (cpu << 16) | (cnt_num & 0xffff);
 
-		MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, pmu_counter_cnt=%d\n", cpu, cnt_num);
+		// MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, pmu_counter_cnt=%d\n", cpu, cnt_num);
 		pr_debug("[MET_PMU][IPI_CONFIG] core=%d, pmu_counter_cnt=%d\n", cpu, cnt_num);
 
-		MET_TRACE("[MET_PMU][IPI_CONFIG] sspm_buf_available=%d, in_interrupt()=%lu\n", sspm_buf_available, in_interrupt());
+		// MET_TRACE("[MET_PMU][IPI_CONFIG] sspm_buf_available=%d, in_interrupt()=%lu\n", sspm_buf_available, in_interrupt());
 		pr_debug("[MET_PMU][IPI_CONFIG] sspm_buf_available=%d, in_interrupt()=%lu\n", sspm_buf_available, in_interrupt());
 
 		if (sspm_buf_available == 1) {
@@ -1014,7 +1014,7 @@ static void ipi_config_pmu_counter_cnt(void) {
 		ipi_buf[0] = MET_MAIN_ID | (MID_PMU << MID_BIT_SHIFT) | MET_ARGU | SET_PMU_BASE_OFFSET;
 		ipi_buf[1] = (cpu << 16) | (base_offset & 0xffff);
 
-		MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, base offset set to %lu\n", cpu, base_offset);
+		// MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, base offset set to %lu\n", cpu, base_offset);
 		pr_debug("[MET_PMU][IPI_CONFIG] core=%d, base offset set to %lu\n", cpu, base_offset);
 
 		if (sspm_buf_available == 1) {
@@ -1029,7 +1029,7 @@ static void ipi_config_pmu_counter_cnt(void) {
 			ipi_buf[0] = MET_MAIN_ID | (MID_PMU << MID_BIT_SHIFT) | MET_ARGU | SET_PMU_CYCCNT_ENABLE;
 			ipi_buf[1] = cpu & 0xffff;
 
-			MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, pmu cycle cnt enable\n", cpu);
+			// MET_TRACE("[MET_PMU][IPI_CONFIG] core=%d, pmu cycle cnt enable\n", cpu);
 			pr_debug("[MET_PMU][IPI_CONFIG] core=%d, pmu cycle cnt enable\n", cpu);
 
 			if (sspm_buf_available == 1) {
@@ -1078,7 +1078,7 @@ static int __validate_sspm_compatibility(void) {
 	for_each_possible_cpu(cpu) {
 
 		if (!__is_perf_event_hw_slot_seq_order(cpu)) {
-			MET_TRACE("[MET_PMU] pmu not sequentially allocated on cpu %d\n"
+			// MET_TRACE("[MET_PMU] pmu not sequentially allocated on cpu %d\n"
 				  ,cpu);
 			pr_debug("[MET_PMU] pmu not sequentially allocated on cpu %d\n"
 				 ,cpu);
@@ -1096,7 +1096,7 @@ static void sspm_pmu_unique_start(void) {
 
 	if (met_cpupmu.ondiemet_mode == 1) {
 		if (__validate_sspm_compatibility() == -1) {
-			MET_TRACE("[MET_PMU] turned off sspm side polling\n");
+			// MET_TRACE("[MET_PMU] turned off sspm side polling\n");
 			pr_debug("[MET_PMU] turned off sspm side polling\n");
 			/* return without sending init IPIs, leaving sspm side to poll nothing */
 			return;
@@ -1138,7 +1138,7 @@ static int sspm_pmu_process_argument(const char *arg, int len)
 	if (met_cpupmu.ondiemet_mode == 1) {
 
 		if (!cpu_pmu->pmu_read_clear_overflow_flag) {
-			MET_TRACE("[MET_PMU] cpu_pmu->pmu_read_clear_overflow_flag=NULL, "
+			// MET_TRACE("[MET_PMU] cpu_pmu->pmu_read_clear_overflow_flag=NULL, "
 				  "pmu on sspm was not supported on this platform\n");
 			pr_debug("[MET_PMU] cpu_pmu->pmu_read_clear_overflow_flag=NULL, "
 				 "pmu on sspm was not supported on this platform\n");

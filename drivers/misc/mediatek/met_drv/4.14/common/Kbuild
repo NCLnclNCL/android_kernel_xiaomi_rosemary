@@ -20,7 +20,7 @@ ifneq ($(wildcard $(MET_PLF_DIR)/Kbuild.platform.inc),)
 else
     $(info ======= Missing $(MET_PLF_DIR)/Kbuild.platform.inc ========)
 endif
-ccflags-y += -DMET_TRACE(x,...)=do{}while(0)
+
 ccflags-y += -DCONFIG_MET_MODULE
 ccflags-y += -DMET_PLF_USE
 ccflags-y += -I$(MET_COMMON_DIR)

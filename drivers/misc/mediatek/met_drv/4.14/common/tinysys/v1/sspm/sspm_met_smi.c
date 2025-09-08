@@ -153,7 +153,7 @@ do { \
 /*======================================================================*/
 static void met_smi_debug(char *debug_log)
 {
-	MET_TRACE("%s", debug_log);
+	// MET_TRACE("%s", debug_log);
 }
 
 static int do_smi(void)
