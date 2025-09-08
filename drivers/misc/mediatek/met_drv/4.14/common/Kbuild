@@ -1,6 +1,10 @@
 ################################################################################
 # Common
 ################################################################################
+MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
+MET_ROOT_DIR := $(srctree)/drivers/misc/mediatek/met_drv/4.14
+MET_COMMON_DIR := $(wildcard $(MET_ROOT_DIR)/common)
+MET_PLF_DIR := $(wildcard $(MET_ROOT_DIR)/$(MTK_PLATFORM))
 ifneq ($(CONFIG_MTK_MET_BUILT_IN),y)
 $(info ======== Build met.ko ... ========)
 obj-m := met.o
