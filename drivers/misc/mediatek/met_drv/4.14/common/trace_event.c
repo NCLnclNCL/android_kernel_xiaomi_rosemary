@@ -105,10 +105,10 @@ met_trace_print_symbols_seq(char* pclass_name, unsigned long val,
 		met_trace_print_symbols_seq(pclass_name, value, symbols);		\
 	})
 
-#ifdef pm_qos_update_request
-#undef pm_qos_update_request
+#ifdef pm_qos_update_request_dif
+#undef pm_qos_update_request_dif
 #endif
-void pm_qos_update_request(int pm_qos_class, s32 value, char *owner)
+void pm_qos_update_request_dif(int pm_qos_class, s32 value, char *owner)
 {
 	char class_name[64];
 	MET_TRACE("pm_qos_class=%s value=%d owner=%s\n",
@@ -120,10 +120,10 @@ void pm_qos_update_request(int pm_qos_class, s32 value, char *owner)
 }
 //#endif
 
-#ifdef pm_qos_update_target
-#undef pm_qos_update_target
+#ifdef pm_qos_update_target_dif
+#undef pm_qos_update_target_dif
 #endif
-void pm_qos_update_target(unsigned int action, int prev_value, int curr_value)
+void pm_qos_update_target_dif(unsigned int action, int prev_value, int curr_value)
 {
 	char class_name[64];
 

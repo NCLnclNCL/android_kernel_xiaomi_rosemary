@@ -77,7 +77,7 @@ static int is_enabled(unsigned int class_id)
 	return 1;
 }
 
-noinline int tracing_mark_write(int type, unsigned int class_id,
+noinline int tracing_mark_write_dif(int type, unsigned int class_id,
 				       const char *name, unsigned int value,
 				       unsigned int value2, unsigned int value3)
 {
@@ -134,7 +134,7 @@ int met_tag_start_real(unsigned int class_id, const char *name)
 {
 	int ret;
 
-	ret = tracing_mark_write(TYPE_START, class_id, name, 0, 0, 0);
+	ret = tracing_mark_write_dif(TYPE_START, class_id, name, 0, 0, 0);
 #if 0
 	if ((met_switch.mode & MT_SWITCH_TAGPOLLING)) {
 		/* tag polling only enable when MT_SWITCH_TAGPOLLING is config */
@@ -154,7 +154,7 @@ int met_tag_end_real(unsigned int class_id, const char *name)
 		force_sample(NULL);
 	}
 #endif
-	ret = tracing_mark_write(TYPE_END, class_id, name, 0, 0, 0);
+	ret = tracing_mark_write_dif(TYPE_END, class_id, name, 0, 0, 0);
 
 	return ret;
 }
@@ -164,7 +164,7 @@ int met_tag_async_start_real(unsigned int class_id, const char *name, unsigned i
 {
 	int ret;
 
-	ret = tracing_mark_write(TYPE_ASYNC_START, class_id, name, cookie, 0, 0);
+	ret = tracing_mark_write_dif(TYPE_ASYNC_START, class_id, name, cookie, 0, 0);
 #if 0
 	if ((met_switch.mode & MT_SWITCH_TAGPOLLING)) {
 		/* tag polling only enable when MT_SWITCH_TAGPOLLING is config */
@@ -184,7 +184,7 @@ int met_tag_async_end_real(unsigned int class_id, const char *name, unsigned int
 		force_sample(NULL);
 	}
 #endif
-	ret = tracing_mark_write(TYPE_ASYNC_END, class_id, name, cookie, 0, 0);
+	ret = tracing_mark_write_dif(TYPE_ASYNC_END, class_id, name, cookie, 0, 0);
 	return ret;
 }
 
@@ -192,7 +192,7 @@ int met_tag_oneshot_real(unsigned int class_id, const char *name, unsigned int v
 {
 	int ret;
 
-	ret = tracing_mark_write(TYPE_ONESHOT, class_id, name, value, 0, 0);
+	ret = tracing_mark_write_dif(TYPE_ONESHOT, class_id, name, value, 0, 0);
 #if 0
 	if ((met_switch.mode & MT_SWITCH_TAGPOLLING)) {
 		/* tag polling only enable when MT_SWITCH_TAGPOLLING is config */
@@ -219,16 +219,16 @@ int met_tag_dump_real(unsigned int class_id, const char *name, void *data, unsig
 			dump_overrun++;
 			memcpy(dump_buffer, &dump_seq_no, sizeof(int));
 			memcpy(dump_buffer + sizeof(int), data, length);
-			ret = tracing_mark_write(TYPE_DUMP, class_id, name,
+			ret = tracing_mark_write_dif(TYPE_DUMP, class_id, name,
 						 dump_seq_no++, 0, length + sizeof(int));
 			dump_data_size = length + sizeof(int);
 		} else {
-			ret = tracing_mark_write(TYPE_DUMP, class_id, name, dump_seq_no++, 0, 0);
+			ret = tracing_mark_write_dif(TYPE_DUMP, class_id, name, dump_seq_no++, 0, 0);
 		}
 	} else {
 		memcpy(dump_buffer + dump_data_size, &dump_seq_no, sizeof(int));
 		memcpy(dump_buffer + dump_data_size + sizeof(int), data, length);
-		ret = tracing_mark_write(TYPE_DUMP, class_id, name,
+		ret = tracing_mark_write_dif(TYPE_DUMP, class_id, name,
 					 dump_seq_no++, dump_data_size, length + sizeof(int));
 		dump_data_size += length + sizeof(int);
 	}
