@@ -20,6 +20,12 @@
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/clk.h>
+#define MET_STRBUF_SIZE		1024
+DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_nmi);
+DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_irq);
+DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf_sirq);
+DECLARE_PER_CPU(char[MET_STRBUF_SIZE], met_strbuf);
+
 #ifdef CONFIG_TRACING
 #define TRACE_PUTS(p) \
 	do { \
