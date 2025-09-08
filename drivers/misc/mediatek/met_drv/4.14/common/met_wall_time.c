@@ -134,7 +134,7 @@ noinline void met_mono_time(void)
 	ktime_t cur_mono_ts = ktime_get();
 
 	// MET_TRACE("TS.APTS=%llu TS.MONO=%llu\n", (unsigned long long)cur_local_ns,
-		(unsigned long long)ktime_to_ns(cur_mono_ts));
+	//	(unsigned long long)ktime_to_ns(cur_mono_ts));
 }
 
 noinline void met_ap_wall_time(unsigned long long ts, int cpu)
@@ -157,7 +157,7 @@ noinline void met_ap_wall_time(unsigned long long ts, int cpu)
 		sec = us_ts;
 		usec = do_div(sec, 1000000);	/* sec = us_ts/1000000; usec = us_ts%1000000; */
 		// MET_TRACE("TS.APTS=%llu.%06llu WCLK=%llu\n", (unsigned long long)sec,
-			   (unsigned long long)usec, (unsigned long long)cycles);
+		//	   (unsigned long long)usec, (unsigned long long)cycles);
 
 		// print local time vs mono time for gpu time shift
 		met_mono_time();
