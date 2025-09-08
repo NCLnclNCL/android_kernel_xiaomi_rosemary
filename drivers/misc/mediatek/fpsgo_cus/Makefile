@@ -34,6 +34,13 @@
 #
 DISABLE_LTO_CLANG := -fno-lto
 export DISABLE_LTO_CLANG
+subdir-ccflags-y += $(DISABLE_LTO_CLANG)
+# Với 1 module riêng
+ccflags-y += $(DISABLE_LTO_CLANG)
+
+# Hoặc với 1 file .o cụ thể
+#CFLAGS_xgf_v3_ko_arm64.o += $(DISABLE_LTO_CLANG)
+
 BASE_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/base
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
