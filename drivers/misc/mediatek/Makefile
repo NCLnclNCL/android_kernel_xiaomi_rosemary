@@ -38,7 +38,7 @@ obj-$(CONFIG_MTK_SYSTRACKER_V2)   += systracker/
 endif
 obj-y += udc/
 
-#obj-$(CONFIG_MTK_FPSGO_V3) += fpsgo_cus/
+obj-$(CONFIG_MTK_FPSGO_V3) += fpsgo_cus/
 
 obj-$(CONFIG_MTK_IRRX) += irrx/
 
