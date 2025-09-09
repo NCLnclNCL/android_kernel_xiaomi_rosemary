@@ -50,8 +50,8 @@ ccflags-y += \
 	     -I$(FBT_TOP)/include/ \
          -I$(BASE_TOP)/include/ \
          -I$(FPS_TOP)/ \
-obj-y += fpsgo.o
-fpsgo-y += fpsgo_main.o
+obj-y += fpsgo_main.o
+#fpsgo-y += fpsgo_main.o
 #$(obj)/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/xgf_v3_ko_arm64.o
 #	@mkdir -p $(dir $@)
 #	$(Q)cp $< $@
@@ -69,7 +69,7 @@ ifeq (y,$(CONFIG_MTK_FPSGO_V3))
 				fpsgo-$(CONFIG_ARM64) += xgf_v3_ko_arm64_cfi.o
 			endif
 		else
-			fpsgo-$(CONFIG_ARM64) += $(FPS_TOP)/xgf_v3_ko_arm64.o
+			obj-$(CONFIG_ARM64) += $(FPS_TOP)/xgf_v3_ko_arm64.o
 		endif
 	endif
 else
