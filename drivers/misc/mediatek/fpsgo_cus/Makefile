@@ -32,11 +32,11 @@
 # have been modified by MediaTek Inc. All revisions are subject to any receiver\'s
 # applicable license agreements with MediaTek Inc.
 #
-DISABLE_LTO_CLANG := -fno-lto
-export DISABLE_LTO_CLANG
-subdir-ccflags-y += $(DISABLE_LTO_CLANG)
+#DISABLE_LTO_CLANG := -fno-lto
+#export DISABLE_LTO_CLANG
+#subdir-ccflags-y += $(DISABLE_LTO_CLANG)
 # Với 1 module riêng
-ccflags-y += $(DISABLE_LTO_CLANG)
+#ccflags-y += $(DISABLE_LTO_CLANG)
 
 # Hoặc với 1 file .o cụ thể
 #CFLAGS_xgf_v3_ko_arm64.o += $(DISABLE_LTO_CLANG)
