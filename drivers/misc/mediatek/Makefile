@@ -179,7 +179,7 @@ obj-y += mtprintk/
 ifneq ($(wildcard $(srctree)/drivers/misc/mediatek/met_drv/),)
 obj-y += met_drv/
 endif
-obj-y += met_drv_v2/
+#obj-y += met_drv_v2/
 obj-y += perf/
 obj-$(CONFIG_MTK_JPEG) += jpeg/
 obj-$(CONFIG_MTK_SPMTWAM) += twam/
