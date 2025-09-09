@@ -32,19 +32,12 @@
 # have been modified by MediaTek Inc. All revisions are subject to any receiver\'s
 # applicable license agreements with MediaTek Inc.
 #
-#DISABLE_LTO_CLANG := -fno-lto
-#export DISABLE_LTO_CLANG
-#subdir-ccflags-y += $(DISABLE_LTO_CLANG)
-# Với 1 module riêng
-#ccflags-y += $(DISABLE_LTO_CLANG)
 
-# Hoặc với 1 file .o cụ thể
-#CFLAGS_xgf_v3_ko_arm64.o += $(DISABLE_LTO_CLANG)
 
 BASE_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/base
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
-
+FPS_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus/src
 ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),y))
 ccflags-y += -DCONFIG_MTK_FPSGO_V3
 subdir-ccflags-y += -DCONFIG_MTK_FPSGO_V3
@@ -55,12 +48,12 @@ ccflags-y += \
 	     -I$(MTK_TOP)/include/ \
 	     -I$(FBT_TOP)/include/ \
          -I$(BASE_TOP)/include/ \
+         -I$(FPS_TOP)/ \
 obj-y += fpsgo.o
 fpsgo-y += src/fpsgo_main.o
 $(obj)/src/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/src/xgf_v3_ko_arm64.o
+	@mkdir -p $(dir $@)
 	$(Q)cp $< $@
-
-#CFLAGS_REMOVE_src/xgf_v3_ko_arm64.o += $(CC_FLAGS_LTO)
 
 
 ifeq (y,$(CONFIG_MTK_FPSGO_V3))
