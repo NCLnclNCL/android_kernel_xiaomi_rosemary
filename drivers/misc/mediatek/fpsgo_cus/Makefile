@@ -37,7 +37,8 @@
 BASE_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/base
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
-FPS_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus/src
+FPS_SRC_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus/src
+FPS_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus
 ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),y))
 ccflags-y += -DCONFIG_MTK_FPSGO_V3
 subdir-ccflags-y += -DCONFIG_MTK_FPSGO_V3
@@ -48,12 +49,12 @@ ccflags-y += \
 	     -I$(MTK_TOP)/include/ \
 	     -I$(FBT_TOP)/include/ \
          -I$(BASE_TOP)/include/ \
-         -I$(FPS_TOP)/ \
+         -I$(FPS_SRC_TOP)/ \
 obj-y += fpsgo.o
 fpsgo-y += src/fpsgo_main.o
-$(obj)/src/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/src/xgf_v3_ko_arm64.o
-	@mkdir -p $(dir $@)
-	$(Q)cp $< $@
+#$(obj)/src/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/src/xgf_v3_ko_arm64.o
+#	@mkdir -p $(dir $@)
+#	$(Q)cp $< $@
 
 
 ifeq (y,$(CONFIG_MTK_FPSGO_V3))
@@ -68,11 +69,11 @@ ifeq (y,$(CONFIG_MTK_FPSGO_V3))
 				fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64_cfi.o
 			endif
 		else
-			fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64.o
+			fpsgo-$(CONFIG_ARM64) += $(FPS_TOP)/src/xgf_v3_ko_arm64.o
 		endif
 	endif
 else
 	ifeq (m,$(CONFIG_MTK_FPSGO_V3))
-		fpsgo-y += src/xgf_v3_ko_quark.o
+		fpsgo-y += $(FPS_TOP)/src/xgf_v3_ko_quark.o
 	endif
 endif
