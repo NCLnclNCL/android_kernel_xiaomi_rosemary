@@ -69,11 +69,11 @@ ifeq (y,$(CONFIG_MTK_FPSGO_V3))
 				fpsgo-$(CONFIG_ARM64) += xgf_v3_ko_arm64_cfi.o
 			endif
 		else
-			obj-$(CONFIG_ARM64) += $(FPS_TOP)/xgf_v3_ko_arm64.o
+			obj-$(CONFIG_ARM64) += xgf_v3_ko_arm64.o
 		endif
 	endif
 else
 	ifeq (m,$(CONFIG_MTK_FPSGO_V3))
-		fpsgo-y += $(FPS_TOP)/xgf_v3_ko_quark.o
+		fpsgo-y += xgf_v3_ko_quark.o
 	endif
 endif
