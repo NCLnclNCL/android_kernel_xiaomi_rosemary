@@ -769,11 +769,11 @@ endif
 #  stackp-name := REGULAR
 #else
 #ifdef CONFIG_CC_STACKPROTECTOR_STRONG
-  stackp-flag := -fstack-protector-strong
-  stackp-name := STRONG
+#  stackp-flag := -fstack-protector-strong
+#  stackp-name := STRONG
 #else
-  # Force off for distro compilers that enable stack protector by default.
- # stackp-flag := $(call cc-option, -fno-stack-protector)
+   Force off for distro compilers that enable stack protector by default.
+  stackp-flag := $(call cc-option, -fno-stack-protector)
 #endif
 #endif
 # Find arch-specific stack protector compiler sanity-checking script.
