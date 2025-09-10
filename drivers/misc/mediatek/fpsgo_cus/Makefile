@@ -63,8 +63,8 @@ fpsgo-y += src/fpsgo_main.o
 #				fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64_cfi.o
 #			endif
 #		else
-$(obj)/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/xgf_v3_ko_arm64.o
-	$(Q)cp $< $@
+#$(obj)/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/xgf_v3_ko_arm64.o
+#	$(Q)cp $< $@
 			fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64.o
 #		endif
 #	endif
