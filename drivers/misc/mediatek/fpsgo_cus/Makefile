@@ -33,46 +33,44 @@
 # applicable license agreements with MediaTek Inc.
 #
 
-
 BASE_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/base
 FBT_TOP = $(srctree)/drivers/misc/mediatek/performance/fpsgo_v3/fbt
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
-#FPS_SRC_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus/src
-FPS_TOP = $(srctree)/drivers/misc/mediatek/fpsgo_cus
-ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),y))
+
+#ifeq ($(CONFIG_MTK_FPSGO_V3),$(filter $(CONFIG_MTK_FPSGO_V3),m))
 ccflags-y += -DCONFIG_MTK_FPSGO_V3
 subdir-ccflags-y += -DCONFIG_MTK_FPSGO_V3
-endif
+#endif
 
 ccflags-y += \
 	     -I$(srctree)/include/ \
 	     -I$(MTK_TOP)/include/ \
 	     -I$(FBT_TOP)/include/ \
-         -I$(BASE_TOP)/include/ \
-         -I$(FPS_TOP)/ \
-obj-y += fpsgo_main.o
-#fpsgo-y += fpsgo_main.o
+	     -I$(BASE_TOP)/include/ \
+
+obj-y += fpsgo.o
+fpsgo-y += src/fpsgo_main.o
+
+#ifeq (y,$(CONFIG_MTK_FPSGO_V3))
+#	ifeq (y,$(CONFIG_THUMB2_KERNEL))
+#		fpsgo-y += src/xgf_v3_ko_thumb2.o
+#	else
+#		fpsgo-$(CONFIG_ARM) += src/xgf_v3_ko_arm32.o
+#		ifeq (y,$(CONFIG_CFI_CLANG))
+#			ifeq (y,$(CONFIG_CFI_PERMISSIVE))
+#				fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64_cfi_d.o
+#			else
+#				fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64_cfi.o
+#			endif
+#		else
 $(obj)/xgf_v3_ko_arm64.o: $(srctree)/drivers/misc/mediatek/fpsgo_cus/xgf_v3_ko_arm64.o
-	$(Q)cp $< $@
-
-
-ifeq (y,$(CONFIG_MTK_FPSGO_V3))
-	ifeq (y,$(CONFIG_THUMB2_KERNEL))
-		fpsgo-y += xgf_v3_ko_thumb2.o
-	else
-		fpsgo-$(CONFIG_ARM) += xgf_v3_ko_arm32.o
-		ifeq (y,$(CONFIG_CFI_CLANG))
-			ifeq (y,$(CONFIG_CFI_PERMISSIVE))
-				fpsgo-$(CONFIG_ARM64) += xgf_v3_ko_arm64_cfi_d.o
-			else
-				fpsgo-$(CONFIG_ARM64) += xgf_v3_ko_arm64_cfi.o
-			endif
-		else
-			obj-$(CONFIG_ARM64) += xgf_v3_ko_arm64.o
-		endif
-	endif
-else
+$(Q)cp $< $@
+			fpsgo-$(CONFIG_ARM64) += src/xgf_v3_ko_arm64.o
+#		endif
+#	endif
+#else
 	ifeq (m,$(CONFIG_MTK_FPSGO_V3))
-		fpsgo-y += xgf_v3_ko_quark.o
+	
+		fpsgo-y += src/xgf_v3_ko_quark.o
 	endif
-endif
+#endif
