@@ -772,7 +772,7 @@ endif
 #  stackp-flag := -fstack-protector-strong
 #  stackp-name := STRONG
 #else
-   Force off for distro compilers that enable stack protector by default.
+ #  Force off for distro compilers that enable stack protector by default.
   stackp-flag := $(call cc-option, -fno-stack-protector)
 #endif
 #endif
