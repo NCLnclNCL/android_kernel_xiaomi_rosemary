@@ -1218,7 +1218,7 @@ static irqreturn_t ln8000_interrupt_handler(int irq, void *data)
     u8 int_reg, int_msk;
     u8 masked_int;
     int ret;
-    ln_err("ln8000_interrupt_handler enter!\n");
+  //  ln_err("ln8000_interrupt_handler enter!\n");
     ret = ln8000_read_int_value(info, &int_reg);
     if (IS_ERR_VALUE((unsigned long)ret)) {
         ln_err("fail to read INT reg (ret=%d)\n", ret);
@@ -1227,7 +1227,7 @@ static irqreturn_t ln8000_interrupt_handler(int irq, void *data)
     ln8000_read_reg(info, LN8000_REG_INT1_MSK, &int_msk);
     masked_int = int_reg & ~int_msk;
 
-    ln_info("int_reg=0x%x, int_msk=0x%x, masked_int=0x%x\n", int_reg, int_msk, masked_int);
+   // ln_info("int_reg=0x%x, int_msk=0x%x, masked_int=0x%x\n", int_reg, int_msk, masked_int);
 
   //  ln8000_print_regmap(info);
     LN8000_BIT_CHECK(masked_int, 7, "(INT) FAULT_INT");
@@ -1244,7 +1244,7 @@ static irqreturn_t ln8000_interrupt_handler(int irq, void *data)
         if (info->volt_qual) {
             ln_info("connected to power_supplier\n");
         } else {
-            ln_info("FAULT_INT has occurred\n");
+     //       ln_info("FAULT_INT has occurred\n");
         }
     }
     if (masked_int & LN8000_MASK_NTC_PROT_INT) { /* NTC_PROT_INT */
