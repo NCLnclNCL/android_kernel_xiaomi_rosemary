@@ -1828,8 +1828,8 @@ skip_cmd_resp_polling:
 	} else if (intsts & MSDC_INT_CMDTMO) {
 		cmd->error = (unsigned int)-ETIMEDOUT;
 		if ((cmd->opcode != 19) && (cmd->opcode != 21))
-			pr_notice("[%s]: msdc%d CMD<%d> MSDC_INT_CMDTMO Arg<0x%.8x>\n",
-				__func__, host->id, cmd->opcode, cmd->arg);
+	//		pr_notice("[%s]: msdc%d CMD<%d> MSDC_INT_CMDTMO Arg<0x%.8x>\n",
+	//			__func__, host->id, cmd->opcode, cmd->arg);
 		if ((cmd->opcode == 52) && (cmd->arg != 0x00000c00)
 			&& (cmd->arg != 0x80000c08)) {
 			msdc_dump_info(NULL, 0, NULL, host->id);
@@ -1851,7 +1851,7 @@ skip_cmd_resp_polling:
 			host->max_busy_timeout_ms,
 			tmo_type == 0x1 ? "dat0" : "resp");
 			/* when r1b hw tmo, use cmd13 instead */
-			/*
+ 			/*
 			 * Maybe need fixed in the future to adjust to the
 			 * __mmc_switch(), otherwise cmd13 in __mmc_switch()
 			 * maybe polling for a long time(even through 10min).
