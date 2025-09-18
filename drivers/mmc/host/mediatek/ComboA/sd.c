@@ -3805,19 +3805,19 @@ static void msdc_dump_trans_error(struct msdc_host   *host,
 //	ERR_MSG("XXX CMD<%d><0x%x> Error<%d> Resp<0x%x>", cmd->opcode, cmd->arg,
 //		cmd->error, cmd->resp[0]);
 
-	if (data) {
+//	if (data) {
 //		ERR_MSG("XXX DAT block<%d> Error<%d>", data->blocks,
 //			data->error);
-	}
-	if (stop)
+	//}
+//	if (stop)
 //		ERR_MSG("XXX STOP<%d> Error<%d> Resp<0x%x>",
 //			stop->opcode, stop->error, stop->resp[0]);
-	}
+//	}
 
-	if (sbc) {
+//	if (sbc) {
 	//	ERR_MSG("XXX SBC<%d><0x%x> Error<%d> Resp<0x%x>",
 //			sbc->opcode, sbc->arg, sbc->error, sbc->resp[0]);
-	}
+//	}
 
 #ifdef SDIO_ERROR_BYPASS
 
