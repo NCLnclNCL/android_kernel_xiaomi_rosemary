@@ -26,7 +26,7 @@
 #include <linux/bootmem.h>
 #include <linux/task_work.h>
 #include <linux/sched/task.h>
-#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)|| defined(CONFIG_KSU_SUSFS_TRY_UMOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_TRY_UMOUNT)
 #include <linux/susfs_def.h>
 #endif
 
@@ -3884,7 +3884,7 @@ const struct proc_ns_operations mntns_operations = {
 	.owner		= mntns_owner,
 };
 
-#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT)
 extern void susfs_try_umount_all(uid_t uid);
 void susfs_run_try_umount_for_current_mnt_ns(void) {
 	struct mount *mnt;
