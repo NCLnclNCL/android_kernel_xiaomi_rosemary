@@ -9,7 +9,7 @@
 #include <linux/security.h>
 #include <linux/uaccess.h>
 #include <linux/compat.h>
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
 #include <linux/susfs_def.h>
 #include "mount.h"
 #endif
@@ -74,7 +74,7 @@ static int statfs_by_dentry(struct dentry *dentry, struct kstatfs *buf)
 int vfs_statfs(const struct path *path, struct kstatfs *buf)
 {
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
 	struct mount *mnt;
 
 	mnt = real_mount(path->mnt);
@@ -262,7 +262,7 @@ int vfs_ustat(dev_t dev, struct kstatfs *sbuf)
 	if (!s)
 		return -EINVAL;
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
 	if (unlikely(s->s_root->d_inode->i_mapping->flags & INODE_STATE_SUS_MOUNT)) {
 		return -EINVAL;
 	}
