@@ -716,11 +716,14 @@ else
 KBUILD_CFLAGS   += -O3
 endif
 ifeq ($(cc-name),gcc)
-KBUILD_CFLAGS	+= -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
+KBUILD_CFLAGS  += -march=armv8.2-a+crc+crypto -mcpu=cortex-a76.cortex-a55+crc+crypto -mtune=cortex-a76.cortex-a55
+KBUILD_AFLAGS  += -march=armv8.2-a+crc+crypto -mcpu=cortex-a76.cortex-a55+crc+crypto -mtune=cortex-a76.cortex-a55
+#KBUILD_CFLAGS += -march=armv8.2-a+crc+crypto -mcpu=cortex-a53+crc+crypto -mtune=cortex-a53
+#KBUILD_AFLAGS += -march=armv8.2-a+crc+crypto -mcpu=cortex-a53+crc+crypto -mtune=cortex-a53
 endif
 ifeq ($(cc-name),clang)
-KBUILD_CFLAGS	+= -mcpu=cortex-a55+crypto -mtune=cortex-a55
-
+KBUILD_CFLAGS	+= -march=armv8.2-a+crc+crypto -mcpu=cortex-a55+crypto -mtune=cortex-a55
+KBUILD_AFLAGS	+= -march=armv8.2-a+crc+crypto -mcpu=cortex-a55+crypto -mtune=cortex-a55
 ifdef CONFIG_LLVM_POLLY
 KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-run-inliner \
