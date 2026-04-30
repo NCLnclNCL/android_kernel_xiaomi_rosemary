@@ -115,7 +115,7 @@
 
 #ifndef __ASSEMBLY__
 
-#include <soc/arc/aux.h>
+#include <soc/arc/au_x.h>
 
 /* Helpers */
 #define TO_KB(bytes)		((bytes) >> 10)
