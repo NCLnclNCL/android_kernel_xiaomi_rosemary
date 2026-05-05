@@ -261,12 +261,6 @@ int vfs_ustat(dev_t dev, struct kstatfs *sbuf)
 	int err;
 	if (!s)
 		return -EINVAL;
-
-#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
-	if (unlikely(s->s_root->d_inode->i_mapping->flags & INODE_STATE_SUS_MOUNT)) {
-		return -EINVAL;
-	}
-#endif
 	err = statfs_by_dentry(s->s_root, sbuf);
 	drop_super(s);
 	return err;
