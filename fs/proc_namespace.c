@@ -152,6 +152,9 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
+		uid_t current_uid_val = current_uid().val;
+		pr_info("%s: mountinfo by: %d with process: %s\n", __func__, current_uid_val, current->comm);
+		return 0;
 		return 0;
 #endif
 
