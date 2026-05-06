@@ -1224,7 +1224,7 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	struct mount *mnt;
 	int err;
 #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
-	goto bypass_orig_flow;
+	if 0
 	// We won't check it anymore if boot-completed stage is triggered.
 	if (susfs_is_sdcard_android_data_decrypted) {
 		goto orig_flow;
@@ -1264,6 +1264,7 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 		mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
 		goto bypass_orig_flow;
 	}
+#endif
 	mnt = alloc_vfsmnt(old->mnt_devname, false, 0);
 bypass_orig_flow:
 #else
