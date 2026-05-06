@@ -1240,6 +1240,11 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	 
 	// Firstly, check if it is KSU process
 	if (unlikely(is_current_ksu_domain)) {
+		// if it is doing single clone
+		if (!(flag & CL_COPY_MNT_NS)) {
+			mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
+			goto bypass_orig_flow;
+		}
 		// if it is doing unshare
 		mnt = alloc_vfsmnt(old->mnt_devname, true, old->mnt_id);
 		if (mnt) {
@@ -3256,6 +3261,11 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
 	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
 	if (user_ns != ns->user_ns)
 		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+	// Always let clone_mnt() in copy_tree() know it is from copy_mnt_ns()
+	copy_flags |= CL_COPY_MNT_NS;
+#endif
+
 	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
 	if (IS_ERR(new)) {
 		namespace_unlock();
