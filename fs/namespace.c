@@ -1240,11 +1240,6 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	 
 	// Firstly, check if it is KSU process
 	if (unlikely(is_current_ksu_domain)) {
-		// if it is doing single clone
-		if (!(flag & CL_COPY_MNT_NS)) {
-			mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
-			goto bypass_orig_flow;
-		}
 		// if it is doing unshare
 		mnt = alloc_vfsmnt(old->mnt_devname, true, old->mnt_id);
 		if (mnt) {
