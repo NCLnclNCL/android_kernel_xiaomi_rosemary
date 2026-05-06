@@ -1231,14 +1231,14 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	}
 	bool is_current_ksu_domain = susfs_is_current_ksu_domain();
 
-	/* - It is very important that we need to use CL_COPY_MNT_NS to identify whether 
-	 *   the clone is a copy_tree() or single mount like called by __do_loopback()
-	 * - if caller process is KSU, consider the following situation:
-	 *     1. it is NOT doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id
-	 *     2. it is doing unshare => spoof the new mnt_id with the old mnt_id
-	 * - If caller process is zygote and old mnt_id is sus => call alloc_vfsmnt() to assign a new sus mnt_id
-	 * - For the rest of caller process that doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id only for old sus mount
-	 */
+	// - It is very important that we need to use CL_COPY_MNT_NS to identify whether 
+	//   the clone is a copy_tree() or single mount like called by __do_loopback()
+	// - if caller process is KSU, consider the following situation:
+	//     1. it is NOT doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id
+	//     2. it is doing unshare => spoof the new mnt_id with the old mnt_id
+	 //- If caller process is zygote and old mnt_id is sus => call alloc_vfsmnt() to assign a new sus mnt_id
+	// - For the rest of caller process that doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id only for old sus mount
+	 
 	// Firstly, check if it is KSU process
 	if (unlikely(is_current_ksu_domain)) {
 		// if it is doing single clone
