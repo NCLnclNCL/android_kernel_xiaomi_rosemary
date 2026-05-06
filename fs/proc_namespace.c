@@ -9,6 +9,7 @@
  */
 #include <linux/mnt_namespace.h>
 #include <linux/nsproxy.h>
+#include <linux/cred.h>
 #include <linux/security.h>
 #include <linux/fs_struct.h>
 #include <linux/sched/task.h>
