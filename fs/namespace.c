@@ -369,7 +369,7 @@ retry:
 		spin_lock(&mnt_id_lock);
 		res = ida_get_new_above(&susfs_mnt_id_ida, susfs_mnt_id_start, &mnt->mnt_id);
 		if (!res)
-		susfs_mnt_id_start = mnt->mnt_id + 1;
+			susfs_mnt_id_start = mnt->mnt_id + 1;
 		spin_unlock(&mnt_id_lock);
 		if (res == -EAGAIN) {
 			goto retry;
