@@ -1159,7 +1159,7 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void 
 		return ERR_PTR(-ENODEV);
 
 #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
-	 For newly created mounts, the only caller process we care is KSU
+	// For newly created mounts, the only caller process we care is KSU
 	if (!susfs_is_sdcard_android_data_decrypted && unlikely(susfs_is_current_ksu_domain())) {
 		mnt = alloc_vfsmnt(name, true, 0);
 		goto bypass_orig_flow;
