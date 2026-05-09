@@ -870,10 +870,17 @@ static void rx_queue_release(struct kobject *kobj)
 	struct rps_dev_flow_table *flow_table;
 
 	map = rcu_dereference_protected(queue->rps_map, 1);
-	if (map) {
-		RCU_INIT_POINTER(queue->rps_map, NULL);
-		kfree_rcu(map, rcu);
-	}
+    if (map) {
+        /* Kiểm tra địa chỉ hợp lệ trước khi free */
+        if (unlikely(!virt_addr_valid(map))) {
+            WARN(1, "rx_queue_release: corrupt rps_map=%p\n", map);
+            RCU_INIT_POINTER(queue->rps_map, NULL);
+            goto skip_rps_map;  /* Tránh crash */
+        }
+        RCU_INIT_POINTER(queue->rps_map, NULL);
+        kfree_rcu(map, rcu);    /* ← +0x28: chỉ gọi khi map hợp lệ */
+    }
+skip_rps_map:
 
 	flow_table = rcu_dereference_protected(queue->rps_flow_table, 1);
 	if (flow_table) {
