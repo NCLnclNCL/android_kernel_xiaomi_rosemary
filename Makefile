@@ -713,7 +713,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-fuction)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS   += -Os
 else
-KBUILD_CFLAGS   += -O2
+KBUILD_CFLAGS   += -O3
 endif
 ifeq ($(cc-name),gcc)
 KBUILD_CFLAGS  += -march=armv8.2-a+crc+crypto -mcpu=cortex-a76.cortex-a55+crc+crypto -mtune=cortex-a76.cortex-a55
