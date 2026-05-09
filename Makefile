@@ -724,6 +724,7 @@ endif
 ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= -march=armv8.2-a+crc+crypto -mcpu=cortex-a55+crc+crypto -mtune=cortex-a55
 KBUILD_AFLAGS	+= -march=armv8.2-a+crc+crypto -mcpu=cortex-a55+crc+crypto -mtune=cortex-a55
+ifneq ($(LLVM),)
 ifdef CONFIG_LLVM_POLLY
 KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-run-inliner \
@@ -734,6 +735,7 @@ KBUILD_CFLAGS	+= -mllvm -polly \
 		   -mllvm -polly-detect-keep-going \
 		   -mllvm -polly-vectorizer=stripmine \
 		   -mllvm -polly-invariant-load-hoisting
+endif
 endif
 endif
 
