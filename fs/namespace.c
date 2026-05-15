@@ -1239,31 +1239,44 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	// - For the rest of caller process that doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id only for old sus mount
 	 
 	// Firstly, check if it is KSU process
-	if (unlikely(is_current_ksu_domain)) {
-		// if it is doing single clone
-		if (!(flag & CL_COPY_MNT_NS)) {
-			mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
-			goto bypass_orig_flow;
-		}
-		// if it is doing unshare
-		mnt = alloc_vfsmnt(old->mnt_devname, true, old->mnt_id);
-		if (mnt) {
-			mnt->mnt.susfs_mnt_id_backup = DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE;
-		}
-		goto bypass_orig_flow;
-	}
-	orig_flow:
-//	 Lastly, just check if old->mnt_id is sus
-	if (old->mnt_id >= DEFAULT_SUS_MNT_ID) {
-		// Important Note: 
-		 //  - Here we can't determine whether the unshare is called by zygisk or not,
-		//    so we can only patch out the unshare code in zygisk source code for now,
-		//     but at least we can deal with old sus mounts using alloc_vfsmnt()
- 		 
-		mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
-		goto bypass_orig_flow;
-	}
-	mnt = alloc_vfsmnt(old->mnt_devname, false, 0);
+//  Chỉ gán sus mnt_id cho mount CẦN HIDE, không phải toàn bộ thư mục
+if (unlikely(is_current_ksu_domain)) {
+    if (!(flag & CL_COPY_MNT_NS)) {
+        /*
+         * Bind mount đơn từ KSU:
+         * Chỉ gán sus mnt_id nếu mount nguồn (old) đã là sus mount.
+         * Mount bình thường (thư mục cha, system mount, v.v.) giữ mnt_id gốc.
+         */
+        if (old->mnt_id >= DEFAULT_SUS_MNT_ID) {
+            mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
+        } else {
+            mnt = alloc_vfsmnt(old->mnt_devname, false, 0);
+        }
+        goto bypass_orig_flow;
+    }
+    /*
+     * Unshare / copy_mnt_ns từ KSU:
+     * Chỉ preserve sus mnt_id cho những mount đã là sus.
+     * Mount bình thường dùng mnt_alloc_id() bình thường để
+     * tránh leak mnt_id và tránh set backup sai.
+     */
+    if (old->mnt_id >= DEFAULT_SUS_MNT_ID) {
+        mnt = alloc_vfsmnt(old->mnt_devname, true, old->mnt_id);
+        if (mnt) {
+            mnt->mnt.susfs_mnt_id_backup = DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE;
+        }
+    } else {
+        mnt = alloc_vfsmnt(old->mnt_devname, false, 0);
+    }
+    goto bypass_orig_flow;
+}
+orig_flow:
+//   Lastly, just check if old->mnt_id is sus
+if (old->mnt_id >= DEFAULT_SUS_MNT_ID) {
+    mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
+    goto bypass_orig_flow;
+}
+mnt = alloc_vfsmnt(old->mnt_devname, false, 0);
 bypass_orig_flow:
 #else
 	mnt = alloc_vfsmnt(old->mnt_devname);
