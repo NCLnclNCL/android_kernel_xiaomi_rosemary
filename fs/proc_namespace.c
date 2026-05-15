@@ -111,7 +111,7 @@ static int show_vfsmnt(struct seq_file *m, struct vfsmount *mnt)
 	int err;
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID)))
+	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
 		return 0;
 #endif
 
@@ -152,7 +152,7 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 	int err;
 	//uid_t current_uid_val = current_uid().val;
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID)))
+	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
 	//	pr_info("%s: mountinfo by: %d with process: %s\n", __func__, current_uid_val, current->comm);
 		return 0;
 #endif
@@ -221,10 +221,10 @@ static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
 	struct super_block *sb = mnt_path.dentry->d_sb;
 	int err;
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID)))
-		return 0;
-#endif
+//#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+//	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
+//		return 0;
+//#endif
 
 	/* device */
 	if (sb->s_op->show_devname) {
