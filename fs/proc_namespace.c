@@ -147,8 +147,8 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	int err;
 	uid_t current_uid_val = current_uid().val;
-	char buf[256];
-	char *pathname = d_path(&mnt_path, buf, sizeof(buf));
+//	char buf[256];
+//	char *pathname = d_path(&mnt_path, buf, sizeof(buf));
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	//if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
 	//	if (!IS_ERR(pathname)) {
