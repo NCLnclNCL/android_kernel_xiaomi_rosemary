@@ -166,31 +166,13 @@ retry:
 static void mnt_free_id(struct mount *mnt)
 {
 	int id = mnt->mnt_id;
-#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) && !defined(CONFIG_KSU_SUSFS_MODIFY)
-	int mnt_id_backup = mnt->mnt.susfs_mnt_id_backup;
-	// We should first check the 'mnt->mnt.susfs_mnt_id_backup', see if it is DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE
-	// if so, these mnt_id were not assigned by mnt_alloc_id() so we don't need to free it.
-	if (unlikely(mnt_id_backup == DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE)) {
-		return;
-	}
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT)
 	// Now we can check if its mnt_id is sus
 	if (unlikely(mnt->mnt_id >= DEFAULT_SUS_MNT_ID)) {
 		spin_lock(&mnt_id_lock);
 		ida_remove(&susfs_mnt_id_ida, id);
 		if (susfs_mnt_id_start > id)
 			susfs_mnt_id_start = id;
-		spin_unlock(&mnt_id_lock);
-		return;
-	}
-	// Lastly if 'mnt->mnt.susfs_mnt_id_backup' is not 0, then it contains a backup origin mnt_id
-	// so we free it in the original way
-	if (likely(mnt_id_backup)) {
-		// If mnt->mnt.susfs_mnt_id_backup is not zero, it means mnt->mnt_id is spoofed,
-		// so here we return the original mnt_id for being freed.
-		spin_lock(&mnt_id_lock);
-		ida_remove(&mnt_id_ida, mnt_id_backup);
-		if (mnt_id_start > mnt_id_backup)
-			mnt_id_start = mnt_id_backup;
 		spin_unlock(&mnt_id_lock);
 		return;
 	}
@@ -1203,7 +1185,6 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 		goto orig_flow;
 	}
 	bool is_current_ksu_domain = susfs_is_current_ksu_domain();
-
 	// - It is very important that we need to use CL_COPY_MNT_NS to identify whether 
 	//   the clone is a copy_tree() or single mount like called by __do_loopback()
 	// - if caller process is KSU, consider the following situation:
@@ -1211,18 +1192,13 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	//     2. it is doing unshare => spoof the new mnt_id with the old mnt_id
 	 //- If caller process is zygote and old mnt_id is sus => call alloc_vfsmnt() to assign a new sus mnt_id
 	// - For the rest of caller process that doing unshare => call alloc_vfsmnt() to assign a new sus mnt_id only for old sus mount
-	 
+
 	// Firstly, check if it is KSU process
 	if (unlikely(is_current_ksu_domain)) {
 		// if it is doing single clone
 		if (!(flag & CL_COPY_MNT_NS)) {
 			mnt = alloc_vfsmnt(old->mnt_devname, true, 0);
 			goto bypass_orig_flow;
-		}
-		// if it is doing unshare
-		mnt = alloc_vfsmnt(old->mnt_devname, true, old->mnt_id);
-		if (mnt) {
-			mnt->mnt.susfs_mnt_id_backup = DEFAULT_SUS_MNT_ID_FOR_KSU_PROC_UNSHARE;
 		}
 		goto bypass_orig_flow;
 	}

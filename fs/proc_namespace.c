@@ -146,30 +146,12 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 	struct super_block *sb = mnt->mnt_sb;
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	int err;
-//	uid_t current_uid_val = current_uid().val;
-//	char buf[256];
-//	char *pathname = d_path(&mnt_path, buf, sizeof(buf));
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	if (unlikely((r->mnt_id >= DEFAULT_SUS_MNT_ID) && !susfs_is_current_ksu_domain()))
 	{
-	//	if (!IS_ERR(pathname)) {
-	//		pr_info("check_return %s: uid=%d process=%s path=%s\n",
-	//		__func__,
-	//		current_uid_val,
-	//		current->comm,
-	//		pathname);
-	//	}
-	//	pr_info("%s: mountinfo by: %d with process: %s\n", __func__, current_uid_val, current->comm);
 		return 0;
 	}
 #endif
-//if (!IS_ERR(pathname)) {
-//	pr_info("check_pass %s: uid=%d process=%s path=%s\n",
-//		__func__,
-//		current_uid_val,
-//		current->comm,
-//		pathname);
-//}
 	seq_printf(m, "%i %i %u:%u ", r->mnt_id, r->mnt_parent->mnt_id,
 		   MAJOR(sb->s_dev), MINOR(sb->s_dev));
 	if (sb->s_op->show_path) {
